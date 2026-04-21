@@ -51,6 +51,7 @@ export const AdminLayout = () => {
   const { user, loading, isAdmin } = useAuth();
   const location = useLocation();
   const [navOpen, setNavOpen] = useState(false);
+  const [navMounted, setNavMounted] = useState(false);
   const asideRef = useRef<HTMLElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -59,6 +60,17 @@ export const AdminLayout = () => {
   useEffect(() => {
     setNavOpen(false);
   }, [location.pathname]);
+
+  // Mount drawer in DOM whenever it opens; unmount after exit transition completes
+  useEffect(() => {
+    if (navOpen) {
+      setNavMounted(true);
+      return;
+    }
+    if (!navMounted) return;
+    const t = setTimeout(() => setNavMounted(false), 320);
+    return () => clearTimeout(t);
+  }, [navOpen, navMounted]);
 
   // Mobile drawer behaviour: outside click, escape, swipe-left to close, body lock
   useEffect(() => {
