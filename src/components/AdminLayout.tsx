@@ -51,6 +51,7 @@ export const AdminLayout = () => {
   const { user, loading, isAdmin } = useAuth();
   const location = useLocation();
   const [navOpen, setNavOpen] = useState(false);
+  const [navMounted, setNavMounted] = useState(false);
   const asideRef = useRef<HTMLElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -59,6 +60,17 @@ export const AdminLayout = () => {
   useEffect(() => {
     setNavOpen(false);
   }, [location.pathname]);
+
+  // Mount drawer in DOM whenever it opens; unmount after exit transition completes
+  useEffect(() => {
+    if (navOpen) {
+      setNavMounted(true);
+      return;
+    }
+    if (!navMounted) return;
+    const t = setTimeout(() => setNavMounted(false), 320);
+    return () => clearTimeout(t);
+  }, [navOpen, navMounted]);
 
   // Mobile drawer behaviour: outside click, escape, swipe-left to close, body lock
   useEffect(() => {
@@ -196,10 +208,14 @@ export const AdminLayout = () => {
           />
         </button>
 
-        {/* Mobile overlay */}
-        {navOpen && (
+        {/* Mobile overlay (mounted while drawer is open OR animating out) */}
+        {navMounted && (
           <div
-            className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm animate-in fade-in-0"
+            className={cn(
+              "lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm",
+              "transition-opacity duration-300 ease-out motion-reduce:transition-none",
+              navOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+            )}
             onClick={() => setNavOpen(false)}
             aria-hidden="true"
           />
@@ -210,12 +226,16 @@ export const AdminLayout = () => {
             ref={asideRef}
             className={cn(
               // Desktop: in-flow sidebar
-              "lg:relative lg:translate-x-0 lg:w-auto lg:max-w-none lg:bg-transparent lg:shadow-none lg:border-0 lg:p-0 lg:z-auto lg:transition-none",
+              "lg:relative lg:translate-x-0 lg:w-auto lg:max-w-none lg:bg-transparent lg:shadow-none lg:border-0 lg:p-0 lg:z-auto lg:transition-none lg:visible lg:opacity-100",
               // Mobile: fixed drawer from left
               "fixed inset-y-0 left-0 z-50 w-[80vw] max-w-[300px] bg-background border-r border-border/60 shadow-2xl p-4 overflow-y-auto",
-              "transition-transform duration-300 ease-out",
-              navOpen ? "translate-x-0" : "-translate-x-full"
+              "will-change-transform transform-gpu",
+              "transition-[transform,opacity,visibility] duration-300 ease-out motion-reduce:transition-none",
+              navOpen
+                ? "translate-x-0 opacity-100 visible"
+                : "-translate-x-full opacity-0 invisible lg:visible lg:opacity-100"
             )}
+            aria-hidden={!navOpen ? true : undefined}
             aria-label="Navigation administration"
           >
             {/* Mobile drawer header */}
