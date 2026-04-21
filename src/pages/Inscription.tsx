@@ -138,6 +138,58 @@ const Inscription = () => {
           {errors.age && <p className="text-xs text-destructive">{errors.age}</p>}
         </div>
 
+        <div className="pt-2 mt-2 border-t border-border/60">
+          <p className="text-[11px] uppercase tracking-[0.22em] text-accent font-medium mb-3">
+            Coordonnées du parent
+          </p>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="parentFirstName">Prénom du parent</Label>
+              <Input
+                id="parentFirstName"
+                value={parentFirstName}
+                onChange={(e) => setParentFirstName(e.target.value)}
+                autoComplete="off"
+                required
+              />
+              {errors.parentFirstName && (
+                <p className="text-xs text-destructive">{errors.parentFirstName}</p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="parentLastName">Nom du parent</Label>
+              <Input
+                id="parentLastName"
+                value={parentLastName}
+                onChange={(e) => setParentLastName(e.target.value)}
+                autoComplete="off"
+                required
+              />
+              {errors.parentLastName && (
+                <p className="text-xs text-destructive">{errors.parentLastName}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-1.5 mt-3">
+            <Label htmlFor="parentPhone">Téléphone du parent</Label>
+            <Input
+              id="parentPhone"
+              type="tel"
+              inputMode="tel"
+              placeholder="06 12 34 56 78"
+              value={parentPhone}
+              onChange={(e) => setParentPhone(e.target.value)}
+              autoComplete="tel"
+              required
+            />
+            {errors.parentPhone && (
+              <p className="text-xs text-destructive">{errors.parentPhone}</p>
+            )}
+          </div>
+        </div>
+
         <div className="space-y-1.5">
           <Label htmlFor="email">Email</Label>
           <Input
