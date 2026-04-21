@@ -167,6 +167,29 @@ export const AdminLayout = () => {
           <div className="mt-4 md:mt-5 h-px w-12 bg-accent" />
         </div>
 
+        {/* Mobile trigger button (above content, not inside aside) */}
+        <button
+          type="button"
+          onClick={() => setNavOpen(true)}
+          className="lg:hidden w-full mb-4 flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg border border-border/60 bg-secondary/40 text-sm font-medium hover:bg-secondary/60 transition-colors"
+          aria-expanded={navOpen}
+          aria-controls="admin-nav"
+          aria-haspopup="menu"
+          aria-label="Ouvrir le menu d'administration"
+        >
+          <span className="flex items-center gap-2 min-w-0">
+            <Menu className="h-4 w-4 shrink-0" strokeWidth={1.8} aria-hidden="true" />
+            <activeLink.icon className="h-4 w-4 shrink-0 text-accent" strokeWidth={1.8} aria-hidden="true" />
+            <span className="truncate">{activeLink.label}</span>
+          </span>
+          <ChevronDown
+            className="h-4 w-4 -rotate-90"
+            strokeWidth={1.8}
+            aria-hidden="true"
+          />
+        </button>
+
+        {/* Mobile overlay */}
         {navOpen && (
           <div
             className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm animate-in fade-in-0"
@@ -175,39 +198,39 @@ export const AdminLayout = () => {
           />
         )}
 
-        <div className="grid gap-6 lg:gap-8 lg:grid-cols-[220px_1fr]">
-          <aside ref={asideRef} className={cn(navOpen && "relative z-50")}>
-            <button
-              type="button"
-              onClick={() => setNavOpen((v) => !v)}
-              className="lg:hidden w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-border/60 bg-secondary/40 text-sm font-medium"
-              aria-expanded={navOpen}
-              aria-controls="admin-nav"
-              aria-haspopup="menu"
-              aria-label={navOpen ? "Fermer le menu d'administration" : "Ouvrir le menu d'administration"}
-            >
-              <span className="flex items-center gap-2 min-w-0">
-                <Menu className="h-4 w-4 shrink-0" strokeWidth={1.8} aria-hidden="true" />
-                <activeLink.icon className="h-4 w-4 shrink-0 text-accent" strokeWidth={1.8} aria-hidden="true" />
-                <span className="truncate">{activeLink.label}</span>
-              </span>
-              <ChevronDown
-                className={cn("h-4 w-4 transition-transform", navOpen && "rotate-180")}
-                strokeWidth={1.8}
-                aria-hidden="true"
-              />
-            </button>
+        <div className="grid gap-6 lg:gap-8 lg:grid-cols-[200px_1fr] xl:grid-cols-[240px_1fr]">
+          <aside
+            ref={asideRef}
+            className={cn(
+              // Desktop: in-flow sidebar
+              "lg:relative lg:translate-x-0 lg:w-auto lg:max-w-none lg:bg-transparent lg:shadow-none lg:border-0 lg:p-0 lg:z-auto lg:transition-none",
+              // Mobile: fixed drawer from left
+              "fixed inset-y-0 left-0 z-50 w-[80vw] max-w-[300px] bg-background border-r border-border/60 shadow-2xl p-4 overflow-y-auto",
+              "transition-transform duration-300 ease-out",
+              navOpen ? "translate-x-0" : "-translate-x-full"
+            )}
+            aria-label="Navigation administration"
+          >
+            {/* Mobile drawer header */}
+            <div className="lg:hidden flex items-center justify-between mb-4 pb-3 border-b border-border/60">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-accent font-medium">
+                Navigation
+              </p>
+              <button
+                type="button"
+                onClick={() => setNavOpen(false)}
+                className="text-xs text-muted-foreground hover:text-foreground"
+                aria-label="Fermer le menu"
+              >
+                Fermer
+              </button>
+            </div>
+
             <nav
               id="admin-nav"
               role="menu"
               aria-label="Navigation administration"
-              aria-hidden={!navOpen ? true : undefined}
-              className={cn(
-                "lg:flex lg:flex-col gap-1 mt-2 lg:mt-0 lg:relative lg:bg-transparent lg:p-0 lg:rounded-none lg:border-0 lg:shadow-none",
-                navOpen
-                  ? "flex flex-col bg-background border border-border/60 rounded-lg p-2 shadow-lg"
-                  : "hidden"
-              )}
+              className="flex flex-col gap-1"
             >
               {links.map((l) => {
                 const Icon = l.icon;
@@ -220,15 +243,15 @@ export const AdminLayout = () => {
                     role="menuitem"
                     className={({ isActive }) =>
                       cn(
-                        "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                        "flex items-center gap-2.5 px-3 py-2.5 lg:py-2 rounded-lg text-sm font-medium transition-colors",
                         isActive
                           ? "bg-secondary text-foreground"
                           : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                       )
                     }
                   >
-                    <Icon className="h-4 w-4" strokeWidth={1.8} />
-                    {l.label}
+                    <Icon className="h-4 w-4 shrink-0" strokeWidth={1.8} />
+                    <span className="truncate">{l.label}</span>
                   </NavLink>
                 );
               })}
