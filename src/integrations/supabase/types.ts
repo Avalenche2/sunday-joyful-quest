@@ -292,6 +292,9 @@ export type Database = {
           first_name: string
           id: string
           last_name: string
+          parent_first_name: string | null
+          parent_last_name: string | null
+          parent_phone: string | null
           updated_at: string
         }
         Insert: {
@@ -300,6 +303,9 @@ export type Database = {
           first_name: string
           id: string
           last_name: string
+          parent_first_name?: string | null
+          parent_last_name?: string | null
+          parent_phone?: string | null
           updated_at?: string
         }
         Update: {
@@ -308,6 +314,9 @@ export type Database = {
           first_name?: string
           id?: string
           last_name?: string
+          parent_first_name?: string | null
+          parent_last_name?: string | null
+          parent_phone?: string | null
           updated_at?: string
         }
         Relationships: []
