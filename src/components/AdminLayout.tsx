@@ -50,6 +50,15 @@ const Shell = ({ children }: { children: ReactNode }) => (
 export const AdminLayout = () => {
   const { user, loading, isAdmin } = useAuth();
   const location = useLocation();
+  const [navOpen, setNavOpen] = useState(false);
+  const asideRef = useRef<HTMLElement>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+
+  // Close drawer on route change
+  useEffect(() => {
+    setNavOpen(false);
+  }, [location.pathname]);
 
   if (loading) {
     return (
@@ -87,10 +96,6 @@ export const AdminLayout = () => {
   }
 
   const superAdm = isSuperAdmin(user.email);
-  const [navOpen, setNavOpen] = useState(false);
-  const asideRef = useRef<HTMLElement>(null);
-  const touchStartX = useRef<number | null>(null);
-  const touchStartY = useRef<number | null>(null);
   const activeLink =
     links.find((l) => location.pathname === l.to) ||
     links.find((l) => !l.end && location.pathname.startsWith(l.to)) ||
