@@ -18,6 +18,9 @@ const Inscription = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [age, setAge] = useState("");
+  const [parentFirstName, setParentFirstName] = useState("");
+  const [parentLastName, setParentLastName] = useState("");
+  const [parentPhone, setParentPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -33,6 +36,9 @@ const Inscription = () => {
       firstName,
       lastName,
       age: age ? Number(age) : undefined,
+      parentFirstName,
+      parentLastName,
+      parentPhone,
       email,
       password,
     });
@@ -56,6 +62,9 @@ const Inscription = () => {
           first_name: parsed.data.firstName,
           last_name: parsed.data.lastName,
           age: parsed.data.age,
+          parent_first_name: parsed.data.parentFirstName,
+          parent_last_name: parsed.data.parentLastName,
+          parent_phone: parsed.data.parentPhone,
         },
       },
     });
