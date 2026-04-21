@@ -1,26 +1,30 @@
 import { z } from "zod";
 
 export const signUpSchema = z.object({
-  firstName: z
-    .string()
-    .trim()
-    .min(1, "Prénom requis")
-    .max(50, "Prénom trop long"),
-  lastName: z
-    .string()
-    .trim()
-    .min(1, "Nom requis")
-    .max(50, "Nom trop long"),
+  firstName: z.string().trim().min(1, "Prénom requis").max(50, "Prénom trop long"),
+  lastName: z.string().trim().min(1, "Nom requis").max(50, "Nom trop long"),
   age: z
     .number({ message: "Âge requis" })
     .int()
     .min(4, "Âge minimum : 4 ans")
     .max(18, "Âge maximum : 18 ans"),
-  email: z
+  parentFirstName: z
     .string()
     .trim()
-    .email("Email invalide")
-    .max(255),
+    .min(1, "Prénom du parent requis")
+    .max(50, "Prénom du parent trop long"),
+  parentLastName: z
+    .string()
+    .trim()
+    .min(1, "Nom du parent requis")
+    .max(50, "Nom du parent trop long"),
+  parentPhone: z
+    .string()
+    .trim()
+    .min(6, "Numéro trop court")
+    .max(20, "Numéro trop long")
+    .regex(/^[0-9+\s().-]+$/, "Numéro invalide"),
+  email: z.string().trim().email("Email invalide").max(255),
   password: z
     .string()
     .min(8, "Mot de passe : 8 caractères minimum")
