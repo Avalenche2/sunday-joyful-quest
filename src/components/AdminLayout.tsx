@@ -152,55 +152,6 @@ export const AdminLayout = () => {
     links.find((l) => !l.end && location.pathname.startsWith(l.to)) ||
     links[0];
 
-  useEffect(() => {
-    if (!navOpen) return;
-    const isMobile = () => window.matchMedia("(max-width: 1023px)").matches;
-
-    const onPointerDown = (e: MouseEvent | TouchEvent) => {
-      if (!isMobile()) return;
-      const target = e.target as Node | null;
-      if (asideRef.current && target && !asideRef.current.contains(target)) {
-        setNavOpen(false);
-      }
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setNavOpen(false);
-    };
-    const onTouchStart = (e: TouchEvent) => {
-      const t = e.touches[0];
-      touchStartX.current = t.clientX;
-      touchStartY.current = t.clientY;
-    };
-    const onTouchEnd = (e: TouchEvent) => {
-      if (touchStartX.current == null || touchStartY.current == null) return;
-      const t = e.changedTouches[0];
-      const dx = t.clientX - touchStartX.current;
-      const dy = t.clientY - touchStartY.current;
-      touchStartX.current = null;
-      touchStartY.current = null;
-      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-        setNavOpen(false);
-      }
-    };
-
-    const prevOverflow = document.body.style.overflow;
-    if (isMobile()) document.body.style.overflow = "hidden";
-
-    document.addEventListener("mousedown", onPointerDown);
-    document.addEventListener("touchstart", onPointerDown, { passive: true });
-    document.addEventListener("keydown", onKey);
-    const aside = asideRef.current;
-    aside?.addEventListener("touchstart", onTouchStart, { passive: true });
-    aside?.addEventListener("touchend", onTouchEnd, { passive: true });
-    return () => {
-      document.body.style.overflow = prevOverflow;
-      document.removeEventListener("mousedown", onPointerDown);
-      document.removeEventListener("touchstart", onPointerDown);
-      document.removeEventListener("keydown", onKey);
-      aside?.removeEventListener("touchstart", onTouchStart);
-      aside?.removeEventListener("touchend", onTouchEnd);
-    };
-  }, [navOpen]);
 
   return (
     <Shell>
