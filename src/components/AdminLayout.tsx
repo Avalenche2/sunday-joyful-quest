@@ -24,7 +24,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { isSuperAdmin } from "@/lib/superAdmin";
 
 const links = [
   { to: "/admin", label: "Tableau de bord", icon: LayoutDashboard, end: true },
@@ -48,7 +47,7 @@ const Shell = ({ children }: { children: ReactNode }) => (
 );
 
 export const AdminLayout = () => {
-  const { user, loading, isAdmin } = useAuth();
+  const { user, loading, isAdmin, isSuperAdmin } = useAuth();
   const location = useLocation();
   const [navOpen, setNavOpen] = useState(false);
   const [navMounted, setNavMounted] = useState(false);
@@ -158,7 +157,6 @@ export const AdminLayout = () => {
     );
   }
 
-  const superAdm = isSuperAdmin(user.email);
   const activeLink =
     links.find((l) => location.pathname === l.to) ||
     links.find((l) => !l.end && location.pathname.startsWith(l.to)) ||
@@ -173,7 +171,7 @@ export const AdminLayout = () => {
             <p className="text-[10px] md:text-xs uppercase tracking-[0.25em] md:tracking-[0.3em] text-accent font-medium">
               Espace moniteur
             </p>
-            {superAdm && (
+            {isSuperAdmin && (
               <Badge className="bg-accent text-accent-foreground hover:bg-accent gap-1 h-5 px-2 text-[10px] uppercase tracking-wider">
                 <Crown className="h-3 w-3" strokeWidth={2} />
                 Super admin

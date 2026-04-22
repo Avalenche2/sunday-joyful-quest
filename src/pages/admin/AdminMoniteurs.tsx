@@ -17,7 +17,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { isSuperAdmin } from "@/lib/superAdmin";
 
 interface Moniteur {
   user_id: string;
@@ -25,6 +24,7 @@ interface Moniteur {
   last_name: string;
   email: string;
   approved_at: string | null;
+  is_super_admin: boolean;
 }
 
 interface RejectedRequest {
@@ -68,8 +68,8 @@ const AdminMoniteurs = () => {
 
     const { data: roles } = await supabase
       .from("user_roles")
-      .select("user_id")
-      .eq("role", "admin");
+      .select("user_id, role")
+      .in("role", ["admin", "super_admin"]);
 
     const ids = [...new Set((roles ?? []).map((r) => r.user_id))];
 
@@ -105,12 +105,13 @@ const AdminMoniteurs = () => {
         last_name: p?.last_name ?? "",
         email: r?.email ?? "—",
         approved_at: r?.reviewed_at ?? null,
+        is_super_admin: roles?.some((role) => role.user_id === id && role.role === "super_admin") ?? false,
       };
     });
 
     list.sort((a, b) => {
-      if (isSuperAdmin(a.email)) return -1;
-      if (isSuperAdmin(b.email)) return 1;
+      if (a.is_super_admin) return -1;
+      if (b.is_super_admin) return 1;
       return `${a.first_name} ${a.last_name}`.localeCompare(`${b.first_name} ${b.last_name}`);
     });
 
@@ -206,7 +207,6 @@ const AdminMoniteurs = () => {
               ) : (
                 <ul className="divide-y divide-border/60">
                   {moniteurs.map((m) => {
-                    const superAdm = isSuperAdmin(m.email);
                     const isSelf = user?.id === m.user_id;
                     return (
                       <li
@@ -218,13 +218,13 @@ const AdminMoniteurs = () => {
                             <p className="font-medium text-sm">
                               {m.first_name} {m.last_name}
                             </p>
-                            {superAdm && (
+                            {m.is_super_admin && (
                               <Badge className="bg-accent text-accent-foreground hover:bg-accent gap-1 h-5 px-2 text-[10px] uppercase tracking-wider">
                                 <Crown className="h-3 w-3" strokeWidth={2} />
                                 Super admin
                               </Badge>
                             )}
-                            {isSelf && !superAdm && (
+                            {isSelf && !m.is_super_admin && (
                               <Badge
                                 variant="secondary"
                                 className="h-5 px-2 text-[10px] uppercase tracking-wider"
@@ -242,7 +242,7 @@ const AdminMoniteurs = () => {
                         </div>
 
                         <div>
-                          {superAdm ? (
+                          {m.is_super_admin ? (
                             <Badge variant="outline" className="gap-1 text-[11px]">
                               <ShieldCheck className="h-3 w-3" strokeWidth={1.8} />
                               Protégé
