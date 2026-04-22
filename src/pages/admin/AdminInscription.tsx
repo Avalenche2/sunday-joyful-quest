@@ -20,7 +20,7 @@ const AdminInscription = () => {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState<"pending" | "approved" | null>(null);
 
   if (!authLoading && user && isAdmin) return <Navigate to="/admin" replace />;
 
@@ -63,28 +63,40 @@ const AdminInscription = () => {
     }
 
     if (data.user) {
-      // Crée la demande d'accès moniteur
-      const { error: reqError } = await supabase.from("admin_requests").insert({
-        user_id: data.user.id,
-        first_name: parsed.data.firstName,
-        last_name: parsed.data.lastName,
-        email: parsed.data.email,
-      });
+      const { data: status, error: reqError } = await supabase.rpc("request_admin_access" as never, {
+        _first_name: parsed.data.firstName,
+        _last_name: parsed.data.lastName,
+        _email: parsed.data.email,
+      } as never);
 
       if (reqError) {
-        console.error("admin_requests insert error", reqError);
+        setSubmitting(false);
+        toast({
+          title: "Demande non enregistrée",
+          description: "Ton compte est créé, mais la demande moniteur n'a pas pu être enregistrée.",
+          variant: "destructive",
+        });
+        return;
       }
+
+      setSubmitted(status === "approved" ? "approved" : "pending");
+      setSubmitting(false);
+      return;
     }
 
     setSubmitting(false);
-    setSubmitted(true);
+    setSubmitted("pending");
   };
 
   if (submitted) {
     return (
       <AuthLayout
-        title="Demande envoyée"
-        subtitle="Ta demande est en cours d'examen."
+        title={submitted === "approved" ? "Super admin activé" : "Demande envoyée"}
+        subtitle={
+          submitted === "approved"
+            ? "Ton compte moniteur principal est prêt."
+            : "Ta demande est en cours d'examen."
+        }
         footer={
           <Link
             to="/admin/connexion"
@@ -97,10 +109,19 @@ const AdminInscription = () => {
         <div className="text-center py-4">
           <CheckCircle2 className="h-10 w-10 mx-auto text-accent mb-3" strokeWidth={1.5} />
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Ta demande d'accès moniteur a bien été enregistrée.
-            <br />
-            Un moniteur déjà actif doit la valider avant que tu puisses accéder à
-            l'espace d'administration.
+            {submitted === "approved" ? (
+              <>
+                Tu es le premier compte moniteur : l'accès super admin a été activé
+                automatiquement.
+              </>
+            ) : (
+              <>
+                Ta demande d'accès moniteur a bien été enregistrée.
+                <br />
+                Un moniteur déjà actif doit la valider avant que tu puisses accéder à
+                l'espace d'administration.
+              </>
+            )}
           </p>
         </div>
       </AuthLayout>
@@ -181,7 +202,8 @@ const AdminInscription = () => {
         </div>
 
         <p className="text-[11px] text-muted-foreground leading-relaxed">
-          Ta demande sera examinée par un moniteur déjà actif avant d'obtenir l'accès.
+          Le premier compte moniteur créé sera activé automatiquement comme super admin.
+          Les comptes suivants devront être validés par un moniteur actif.
         </p>
 
         <Button type="submit" className="w-full mt-2" size="lg" disabled={submitting}>
