@@ -560,6 +560,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      request_admin_access: {
+        Args: { _email: string; _first_name: string; _last_name: string }
+        Returns: Database["public"]["Enums"]["admin_request_status"]
+      }
       submit_daily_challenge: {
         Args: { _challenge_id: string; _selected_index: number }
         Returns: boolean
