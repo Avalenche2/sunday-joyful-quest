@@ -1,5 +1,5 @@
-// Email du super administrateur — ne peut pas être révoqué.
-export const SUPER_ADMIN_EMAIL = "isaacfanou1512@gmail.com";
+// Rôle serveur du super administrateur — ne dépend pas d'un email codé en dur.
+export const SUPER_ADMIN_ROLE = "super_admin";
 
-export const isSuperAdmin = (email?: string | null) =>
-  !!email && email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
+export const hasSuperAdminRole = (roles?: string[] | null) =>
+  !!roles?.includes(SUPER_ADMIN_ROLE);
