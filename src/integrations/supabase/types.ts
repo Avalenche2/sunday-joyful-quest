@@ -560,6 +560,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      request_admin_access: {
+        Args: { _email: string; _first_name: string; _last_name: string }
+        Returns: Database["public"]["Enums"]["admin_request_status"]
+      }
       submit_daily_challenge: {
         Args: { _challenge_id: string; _selected_index: number }
         Returns: boolean
@@ -568,7 +572,7 @@ export type Database = {
     }
     Enums: {
       admin_request_status: "pending" | "approved" | "rejected"
-      app_role: "admin" | "enfant"
+      app_role: "admin" | "enfant" | "super_admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -697,7 +701,7 @@ export const Constants = {
   public: {
     Enums: {
       admin_request_status: ["pending", "approved", "rejected"],
-      app_role: ["admin", "enfant"],
+      app_role: ["admin", "enfant", "super_admin"],
     },
   },
 } as const

@@ -4,7 +4,6 @@ import { Crown, LogOut, Mail, ShieldCheck, User as UserIcon } from "lucide-react
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { isSuperAdmin } from "@/lib/superAdmin";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,12 +11,11 @@ import { ChangePasswordDialog } from "@/components/ChangePasswordDialog";
 import { EditAdminProfileDialog } from "@/components/EditAdminProfileDialog";
 
 const AdminProfil = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, isSuperAdmin } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [profile, setProfile] = useState<{ first_name: string; last_name: string } | null>(null);
   const [loggingOut, setLoggingOut] = useState(false);
-  const superAdm = isSuperAdmin(user?.email);
 
   useEffect(() => {
     if (!user) return;
@@ -84,7 +82,7 @@ const AdminProfil = () => {
                 <Badge variant="secondary" className="h-5 px-2 text-[11px]">
                   Moniteur
                 </Badge>
-                {superAdm && (
+                {isSuperAdmin && (
                   <Badge className="bg-accent text-accent-foreground hover:bg-accent gap-1 h-5 px-2 text-[10px] uppercase tracking-wider">
                     <Crown className="h-3 w-3" strokeWidth={2} />
                     Super admin
