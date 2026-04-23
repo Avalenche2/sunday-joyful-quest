@@ -20,7 +20,7 @@ const Connexion = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
-  if (!authLoading && user) return <Navigate to="/" replace />;
+  if (!authLoading && user) return <Navigate to="/profil" replace />;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,7 +71,7 @@ const Connexion = () => {
     setSubmitting(false);
 
     toast({ title: "Heureux de te revoir !", description: "Connexion réussie." });
-    navigate("/", { replace: true });
+    navigate("/profil", { replace: true });
   };
 
   return (
