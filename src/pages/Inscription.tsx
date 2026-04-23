@@ -57,7 +57,7 @@ const Inscription = () => {
     submitLockRef.current = true;
     setSubmitting(true);
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: parsed.data.email,
         password: parsed.data.password,
         options: {
@@ -83,11 +83,27 @@ const Inscription = () => {
         return;
       }
 
+      if (!data.session) {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: parsed.data.email,
+          password: parsed.data.password,
+        });
+
+        if (signInError) {
+          toast({
+            title: "Compte créé",
+            description: "Ton compte existe. Connecte-toi avec ton email et ton mot de passe pour accéder à ton espace.",
+          });
+          navigate("/connexion", { replace: true });
+          return;
+        }
+      }
+
       toast({
         title: "Bienvenue ! 🎉",
-        description: "Ton compte a été créé. Tu peux jouer aux quizz.",
+        description: "Ton compte a été créé. Bienvenue dans ton espace enfant.",
       });
-      navigate("/", { replace: true });
+      navigate("/profil", { replace: true });
     } finally {
       setSubmitting(false);
       window.setTimeout(() => {

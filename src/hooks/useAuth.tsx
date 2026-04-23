@@ -23,35 +23,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Listener AVANT getSession (pattern recommandé)
+    let mounted = true;
+
     const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      if (!mounted) return;
       setSession(newSession);
       setUser(newSession?.user ?? null);
-      if (newSession?.user) {
-        // Defer la requête DB pour éviter les deadlocks
-        setTimeout(() => fetchRoles(newSession.user.id), 0);
-      } else {
-        setRoles([]);
-      }
     });
 
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      if (!mounted) return;
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
-      if (currentSession?.user) {
-        fetchRoles(currentSession.user.id);
-      }
       setLoading(false);
     });
 
-    return () => sub.subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
-  const fetchRoles = async (userId: string) => {
+  useEffect(() => {
+    if (!user) {
+      setRoles([]);
+      return;
+    }
+
+    let cancelled = false;
+    window.setTimeout(() => {
+      if (!cancelled) fetchRoles(user.id, cancelled);
+    }, 0);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  const fetchRoles = async (userId: string, cancelled = false) => {
     const { data } = await supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", userId);
+    if (cancelled) return;
     setRoles((data?.map((r) => r.role as Role)) ?? []);
   };
 
