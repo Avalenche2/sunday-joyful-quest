@@ -83,27 +83,15 @@ const Inscription = () => {
         return;
       }
 
-      if (!data.session) {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: parsed.data.email,
-          password: parsed.data.password,
-        });
-
-        if (signInError) {
-          toast({
-            title: "Compte créé",
-            description: "Ton compte existe. Connecte-toi avec ton email et ton mot de passe pour accéder à ton espace.",
-          });
-          navigate("/connexion", { replace: true });
-          return;
-        }
+      if (data.session) {
+        await supabase.auth.signOut();
       }
 
       toast({
-        title: "Bienvenue ! 🎉",
-        description: "Ton compte a été créé. Bienvenue dans ton espace enfant.",
+        title: "Compte créé ! 🎉",
+        description: "Connecte-toi maintenant pour accéder à ton espace enfant.",
       });
-      navigate("/profil", { replace: true });
+      navigate("/connexion", { replace: true });
     } finally {
       setSubmitting(false);
       window.setTimeout(() => {
