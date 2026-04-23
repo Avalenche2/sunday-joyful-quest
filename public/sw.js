@@ -1,4 +1,4 @@
-const CACHE_NAME = "edd-shell-v2";
+const CACHE_NAME = "edd-shell-v3";
 const DATA_CACHE = "edd-data-v1";
 
 const SHELL_ASSETS = [
@@ -46,8 +46,8 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = request.url;
 
-  // Never intercept OAuth
-  if (url.includes("/~oauth")) return;
+  // Never intercept authentication or non-GET requests
+  if (request.method !== "GET" || url.includes("/auth/v1/") || url.includes("/~oauth")) return;
 
   // API requests: network-first, cache fallback
   if (isCacheableAPI(url)) {
@@ -66,7 +66,7 @@ self.addEventListener("fetch", (event) => {
   // Navigation requests: network-first, serve cached shell as fallback
   if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request).catch(() => caches.match("/"))
+      fetch(request).catch(async () => (await caches.match("/")) || Response.error())
     );
     return;
   }
@@ -89,6 +89,6 @@ self.addEventListener("fetch", (event) => {
 
   // Everything else: network with cache fallback
   event.respondWith(
-    fetch(request).catch(() => caches.match(request))
+    fetch(request).catch(async () => (await caches.match(request)) || Response.error())
   );
 });
