@@ -287,6 +287,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_status: string
           age: number | null
           created_at: string
           first_name: string
@@ -298,6 +299,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          account_status?: string
           age?: number | null
           created_at?: string
           first_name: string
@@ -309,6 +311,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          account_status?: string
           age?: number | null
           created_at?: string
           first_name?: string
