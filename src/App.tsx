@@ -30,6 +30,7 @@ import AdminDailyChallenge from "./pages/admin/AdminDailyChallenge.tsx";
 import AdminConnexion from "./pages/admin/AdminConnexion.tsx";
 import AdminInscription from "./pages/admin/AdminInscription.tsx";
 import AdminMoniteurs from "./pages/admin/AdminMoniteurs.tsx";
+import AdminChildren from "./pages/admin/AdminChildren.tsx";
 import AdminProfil from "./pages/admin/AdminProfil.tsx";
 import { OfflineBanner } from "./components/OfflineBanner.tsx";
 
@@ -73,6 +74,7 @@ const App = () => (
               <Route path="annonces" element={<AdminAnnouncements />} />
               <Route path="horaires" element={<AdminSchedules />} />
               <Route path="defi" element={<AdminDailyChallenge />} />
+              <Route path="enfants" element={<AdminChildren />} />
               <Route path="moniteurs" element={<AdminMoniteurs />} />
               <Route path="profil" element={<AdminProfil />} />
             </Route>
