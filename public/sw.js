@@ -45,8 +45,14 @@ function isCacheableAPI(url) {
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = request.url;
+  const requestUrl = new URL(url);
 
-  // Never intercept authentication or non-GET requests
+  // Never intercept unsupported schemes, authentication, or non-GET requests
+  if (
+    requestUrl.protocol !== "http:" &&
+    requestUrl.protocol !== "https:"
+  ) return;
+
   if (request.method !== "GET" || url.includes("/auth/v1/") || url.includes("/~oauth")) return;
 
   // API requests: network-first, cache fallback
@@ -78,6 +84,7 @@ self.addEventListener("fetch", (event) => {
         (cached) =>
           cached ||
           fetch(request).then((response) => {
+            if (!response.ok || requestUrl.origin !== self.location.origin) return response;
             const clone = response.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
             return response;
