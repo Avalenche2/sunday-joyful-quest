@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,11 +25,13 @@ const Inscription = () => {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const submitLockRef = useRef(false);
 
   if (!authLoading && user) return <Navigate to="/" replace />;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting || submitLockRef.current || authLoading) return;
     setErrors({});
 
     const parsed = signUpSchema.safeParse({
@@ -52,37 +54,46 @@ const Inscription = () => {
       return;
     }
 
+    submitLockRef.current = true;
     setSubmitting(true);
-    const { error } = await supabase.auth.signUp({
-      email: parsed.data.email,
-      password: parsed.data.password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/`,
-        data: {
-          first_name: parsed.data.firstName,
-          last_name: parsed.data.lastName,
-          age: parsed.data.age,
-          parent_first_name: parsed.data.parentFirstName,
-          parent_last_name: parsed.data.parentLastName,
-          parent_phone: parsed.data.parentPhone,
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: parsed.data.email,
+        password: parsed.data.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            first_name: parsed.data.firstName,
+            last_name: parsed.data.lastName,
+            age: parsed.data.age,
+            parent_first_name: parsed.data.parentFirstName,
+            parent_last_name: parsed.data.parentLastName,
+            parent_phone: parsed.data.parentPhone,
+          },
         },
-      },
-    });
-    setSubmitting(false);
+      });
 
-    if (error) {
-      const msg = error.message.includes("already registered")
-        ? "Cet email est déjà inscrit. Connecte-toi."
-        : error.message;
-      toast({ title: "Inscription impossible", description: msg, variant: "destructive" });
-      return;
+      if (error) {
+        const msg = error.message.includes("already registered")
+          ? "Cet email est déjà inscrit. Connecte-toi."
+          : error.status === 429 || error.message.toLowerCase().includes("rate limit")
+            ? "Trop de tentatives d'inscription. Patiente quelques minutes puis réessaie."
+            : error.message;
+        toast({ title: "Inscription impossible", description: msg, variant: "destructive" });
+        return;
+      }
+
+      toast({
+        title: "Bienvenue ! 🎉",
+        description: "Ton compte a été créé. Tu peux jouer aux quizz.",
+      });
+      navigate("/", { replace: true });
+    } finally {
+      setSubmitting(false);
+      window.setTimeout(() => {
+        submitLockRef.current = false;
+      }, 1500);
     }
-
-    toast({
-      title: "Bienvenue ! 🎉",
-      description: "Ton compte a été créé. Tu peux jouer aux quizz.",
-    });
-    navigate("/", { replace: true });
   };
 
   return (
