@@ -37,19 +37,38 @@ const Connexion = () => {
     }
 
     setSubmitting(true);
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: parsed.data.email,
       password: parsed.data.password,
     });
-    setSubmitting(false);
 
     if (error) {
+      setSubmitting(false);
       const msg = error.message.includes("Invalid login credentials")
         ? "Email ou mot de passe incorrect."
         : error.message;
       toast({ title: "Connexion impossible", description: msg, variant: "destructive" });
       return;
     }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("account_status")
+      .eq("id", data.user.id)
+      .maybeSingle();
+
+    if ((profile as { account_status?: string } | null)?.account_status === "paused") {
+      await supabase.auth.signOut();
+      setSubmitting(false);
+      toast({
+        title: "Compte en pause",
+        description: "Ce compte enfant a été mis en pause par un moniteur.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSubmitting(false);
 
     toast({ title: "Heureux de te revoir !", description: "Connexion réussie." });
     navigate("/", { replace: true });
