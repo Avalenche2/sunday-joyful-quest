@@ -80,16 +80,23 @@ self.addEventListener("fetch", (event) => {
   // Static assets: cache-first for JS/CSS bundles
   if (url.match(/\.(js|css|woff2?|png|jpg|svg)$/)) {
     event.respondWith(
-      caches.match(request).then(
-        (cached) =>
-          cached ||
-          fetch(request).then((response) => {
-            if (!response.ok || requestUrl.origin !== self.location.origin) return response;
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+      caches.match(request).then((cached) => {
+        if (cached) return cached;
+
+        return fetch(request).then((response) => {
+          if (
+            !response.ok ||
+            requestUrl.origin !== self.location.origin ||
+            (requestUrl.protocol !== "http:" && requestUrl.protocol !== "https:")
+          ) {
             return response;
-          })
-      )
+          }
+
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone)).catch(() => undefined);
+          return response;
+        });
+      })
     );
     return;
   }
