@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Loader2 } from "lucide-react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -36,6 +37,24 @@ import { OfflineBanner } from "./components/OfflineBanner.tsx";
 
 const queryClient = new QueryClient();
 
+const ProtectedProfileRoute = () => {
+  const { user, session, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-accent" />
+      </div>
+    );
+  }
+
+  if (!user || !session) {
+    return <Navigate to="/connexion" replace />;
+  }
+
+  return <Profil />;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -54,7 +73,7 @@ const App = () => (
             <Route path="/quizz/:id" element={<QuizzPlay />} />
             <Route path="/quizz/:id/recap" element={<QuizzRecap />} />
             <Route path="/classement" element={<Classement />} />
-            <Route path="/profil" element={<Profil />} />
+            <Route path="/profil" element={<ProtectedProfileRoute />} />
             <Route path="/annonces" element={<Annonces />} />
             <Route path="/citations" element={<Citations />} />
             <Route path="/admin/connexion" element={<AdminConnexion />} />
