@@ -14,6 +14,7 @@ import {
   ScrollText,
   ShieldCheck,
   Sun,
+  UsersRound,
   UserCircle,
   UserCog,
 } from "lucide-react";
@@ -34,6 +35,7 @@ const links = [
   { to: "/admin/citations", label: "Citation du jour", icon: Quote },
   { to: "/admin/annonces", label: "Annonces", icon: Megaphone },
   { to: "/admin/horaires", label: "Horaires", icon: CalendarDays },
+  { to: "/admin/enfants", label: "Enfants", icon: UsersRound },
   { to: "/admin/moniteurs", label: "Moniteurs", icon: UserCog },
   { to: "/admin/profil", label: "Mon profil", icon: UserCircle },
 ];
