@@ -135,19 +135,24 @@ const AdminChildren = () => {
     }
     setBusyId(deleteTarget.id);
 
-    const { error } = await supabase.functions.invoke("admin-delete-child", {
+    const { data, error } = await supabase.functions.invoke<{ ok?: boolean; error?: string }>("admin-delete-child", {
       body: { userId: deleteTarget.id },
     });
 
     setBusyId(null);
 
-    if (error) {
-      toast({ title: "Suppression impossible", description: error.message, variant: "destructive" });
+    if (error || data?.ok !== true) {
+      toast({
+        title: "Suppression impossible",
+        description: data?.error || error?.message || "La requête de suppression a échoué.",
+        variant: "destructive",
+      });
       return;
     }
 
     setChildren((items) => items.filter((item) => item.id !== deleteTarget.id));
     toast({ title: "Compte supprimé", description: `${deleteTarget.first_name} ${deleteTarget.last_name}` });
+    await load();
     setDeleteTarget(null);
     setDeleteConfirm("");
   };
