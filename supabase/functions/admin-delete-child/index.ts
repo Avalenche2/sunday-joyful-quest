@@ -75,14 +75,48 @@ Deno.serve(async (req) => {
     });
   }
 
-  await adminClient.from("attempt_answers").delete().in(
-    "attempt_id",
-    (await adminClient.from("quiz_attempts").select("id").eq("user_id", userId)).data?.map((a) => a.id) ?? [],
-  );
-  await adminClient.from("quiz_attempts").delete().eq("user_id", userId);
-  await adminClient.from("daily_challenge_attempts").delete().eq("user_id", userId);
-  await adminClient.from("user_roles").delete().eq("user_id", userId);
-  await adminClient.from("profiles").delete().eq("id", userId);
+  const { data: attempts, error: attemptsError } = await adminClient
+    .from("quiz_attempts")
+    .select("id")
+    .eq("user_id", userId);
+
+  if (attemptsError) {
+    return new Response(JSON.stringify({ error: attemptsError.message }), {
+      status: 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const attemptIds = attempts?.map((attempt) => attempt.id) ?? [];
+
+  if (attemptIds.length > 0) {
+    const { error: answersError } = await adminClient
+      .from("attempt_answers")
+      .delete()
+      .in("attempt_id", attemptIds);
+
+    if (answersError) {
+      return new Response(JSON.stringify({ error: answersError.message }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+  }
+
+  const cleanupSteps = await Promise.all([
+    adminClient.from("quiz_attempts").delete().eq("user_id", userId),
+    adminClient.from("daily_challenge_attempts").delete().eq("user_id", userId),
+    adminClient.from("user_roles").delete().eq("user_id", userId),
+    adminClient.from("profiles").delete().eq("id", userId),
+  ]);
+
+  const cleanupError = cleanupSteps.find((result) => result.error)?.error;
+  if (cleanupError) {
+    return new Response(JSON.stringify({ error: cleanupError.message }), {
+      status: 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
 
   const { error: deleteError } = await adminClient.auth.admin.deleteUser(userId);
   if (deleteError) {
