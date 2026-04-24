@@ -57,21 +57,14 @@ const Profil = () => {
       setShowWelcome(true);
       // Nettoie le state pour ne pas rejouer le tour au refresh
       navigate(location.pathname, { replace: true, state: {} });
-    } else if (user && typeof window !== "undefined") {
-      // Affiche aussi le tour à la 1ère visite (fallback si state perdu)
-      const key = `welcome_tour_seen_${user.id}`;
-      if (!localStorage.getItem(key)) {
-        setShowWelcome(true);
-      }
+    } else {
+      setShowWelcome(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
   const closeWelcome = () => {
     setShowWelcome(false);
-    if (user) {
-      localStorage.setItem(`welcome_tour_seen_${user.id}`, "1");
-    }
   };
 
   useEffect(() => {
