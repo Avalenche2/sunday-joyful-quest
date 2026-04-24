@@ -157,6 +157,11 @@ const Profil = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
+      <WelcomeTour
+        open={showWelcome}
+        onClose={closeWelcome}
+        firstName={profile?.first_name}
+      />
       <main className="flex-1">
         <section className="container py-8 md:py-12">
           <p className="text-xs uppercase tracking-[0.3em] text-accent font-medium">
