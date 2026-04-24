@@ -124,6 +124,15 @@ const AdminChildren = () => {
 
   const deleteChild = async () => {
     if (!deleteTarget) return;
+    const expected = deleteTarget.first_name.trim().toLowerCase();
+    if (deleteConfirm.trim().toLowerCase() !== expected) {
+      toast({
+        title: "Confirmation requise",
+        description: `Tape "${deleteTarget.first_name}" pour confirmer.`,
+        variant: "destructive",
+      });
+      return;
+    }
     setBusyId(deleteTarget.id);
 
     const { error } = await supabase.functions.invoke("admin-delete-child", {
@@ -140,6 +149,7 @@ const AdminChildren = () => {
     setChildren((items) => items.filter((item) => item.id !== deleteTarget.id));
     toast({ title: "Compte supprimé", description: `${deleteTarget.first_name} ${deleteTarget.last_name}` });
     setDeleteTarget(null);
+    setDeleteConfirm("");
   };
 
   return (
