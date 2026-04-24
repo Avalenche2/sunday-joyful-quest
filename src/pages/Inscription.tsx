@@ -103,7 +103,7 @@ const Inscription = () => {
         title: "Bienvenue ! 🎉",
         description: "Ton compte est prêt, on te conduit à ton espace.",
       });
-      navigate("/profil", { replace: true });
+      navigate("/profil", { replace: true, state: { welcome: true } });
     } finally {
       setSubmitting(false);
       window.setTimeout(() => {
