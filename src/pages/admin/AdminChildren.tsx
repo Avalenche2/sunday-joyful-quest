@@ -45,6 +45,7 @@ const AdminChildren = () => {
   const [query, setQuery] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ChildAccount | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState("");
 
   const load = async () => {
     setLoading(true);
