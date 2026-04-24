@@ -189,7 +189,10 @@ const AdminChildren = () => {
               {filtered.map((child) => {
                 const paused = child.account_status === "paused";
                 return (
-                  <li key={child.id} className="px-4 sm:px-6 py-4 flex flex-col gap-4 lg:flex-row lg:items-center">
+                  <li
+                    key={child.id}
+                    className="px-4 sm:px-6 py-4 flex flex-col gap-4 lg:flex-row lg:items-center transition-colors hover:bg-muted/40"
+                  >
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="font-medium text-sm">
@@ -214,6 +217,7 @@ const AdminChildren = () => {
                         size="sm"
                         onClick={() => toggleStatus(child)}
                         disabled={busyId === child.id}
+                        className="transition-all"
                       >
                         {busyId === child.id ? (
                           <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -228,9 +232,12 @@ const AdminChildren = () => {
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => setDeleteTarget(child)}
+                        onClick={() => {
+                          setDeleteConfirm("");
+                          setDeleteTarget(child);
+                        }}
                         disabled={busyId === child.id}
-                        className="text-destructive hover:text-destructive"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10 transition-all"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                         Supprimer
@@ -244,19 +251,48 @@ const AdminChildren = () => {
         </CardContent>
       </Card>
 
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeleteTarget(null);
+            setDeleteConfirm("");
+          }
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Supprimer ce compte enfant ?</AlertDialogTitle>
             <AlertDialogDescription>
-              Cette action supprime le compte, son profil et ses participations aux quizz. Elle est définitive.
+              Cette action supprime <strong>{deleteTarget?.first_name} {deleteTarget?.last_name}</strong>, son profil et ses participations aux quizz. Elle est <strong>définitive</strong>.
             </AlertDialogDescription>
           </AlertDialogHeader>
+          <div className="space-y-2">
+            <label className="text-xs text-muted-foreground">
+              Pour confirmer, tape <strong className="text-foreground">{deleteTarget?.first_name}</strong> ci-dessous :
+            </label>
+            <Input
+              value={deleteConfirm}
+              onChange={(e) => setDeleteConfirm(e.target.value)}
+              placeholder={deleteTarget?.first_name ?? ""}
+              autoFocus
+            />
+          </div>
           <AlertDialogFooter>
             <AlertDialogCancel>Annuler</AlertDialogCancel>
-            <AlertDialogAction onClick={deleteChild} disabled={!!busyId}>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                deleteChild();
+              }}
+              disabled={
+                !!busyId ||
+                deleteConfirm.trim().toLowerCase() !== (deleteTarget?.first_name.trim().toLowerCase() ?? "")
+              }
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
               {busyId && <Loader2 className="h-4 w-4 animate-spin" />}
-              Supprimer
+              Supprimer définitivement
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
