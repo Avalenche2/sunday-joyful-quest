@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import {
@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { BadgeGrid } from "@/components/BadgeGrid";
 import { EditProfileDialog } from "@/components/EditProfileDialog";
 import { ChangePasswordDialog } from "@/components/ChangePasswordDialog";
+import { WelcomeTour } from "@/components/WelcomeTour";
 import {
   BADGES,
   computeUnlockedBadges,
@@ -41,11 +42,37 @@ interface AttemptWithQuiz extends AttemptLite {
 
 const Profil = () => {
   const { user, loading: authLoading } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<ProfileRow | null>(null);
   const [attempts, setAttempts] = useState<AttemptWithQuiz[]>([]);
   const [challengeAttempts, setChallengeAttempts] = useState<DailyChallengeAttemptLite[]>([]);
   const [monthlyRank, setMonthlyRank] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  useEffect(() => {
+    const state = location.state as { welcome?: boolean } | null;
+    if (state?.welcome) {
+      setShowWelcome(true);
+      // Nettoie le state pour ne pas rejouer le tour au refresh
+      navigate(location.pathname, { replace: true, state: {} });
+    } else if (user && typeof window !== "undefined") {
+      // Affiche aussi le tour à la 1ère visite (fallback si state perdu)
+      const key = `welcome_tour_seen_${user.id}`;
+      if (!localStorage.getItem(key)) {
+        setShowWelcome(true);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
+  const closeWelcome = () => {
+    setShowWelcome(false);
+    if (user) {
+      localStorage.setItem(`welcome_tour_seen_${user.id}`, "1");
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
