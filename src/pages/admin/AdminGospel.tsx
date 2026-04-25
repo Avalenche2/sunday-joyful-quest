@@ -42,8 +42,15 @@ const AdminGospel = () => {
   const [deleteTarget, setDeleteTarget] = useState<Row | null>(null);
 
   const resetForm = () => {
+    const usedDates = new Set(recent.map((item) => item.gospel_date));
+    const nextDate = Array.from({ length: 31 }, (_, index) => {
+      const d = new Date();
+      d.setDate(d.getDate() + index);
+      return d.toISOString().slice(0, 10);
+    }).find((candidate) => !usedDates.has(candidate)) ?? today();
+
     setExistingId(null);
-    setDate(today());
+    setDate(nextDate);
     setReference("");
     setVerse("");
     setCommentary("");
