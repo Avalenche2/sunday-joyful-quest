@@ -1,1 +1,4 @@
 project_id = "lediywypylyvkikoeflt"
+
+[functions.admin-delete-child]
+verify_jwt = false

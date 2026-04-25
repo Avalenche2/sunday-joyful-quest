@@ -1,9 +1,19 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { BookOpen, CalendarClock, Loader2, Save } from "lucide-react";
+import { BookOpen, CalendarClock, Loader2, Pencil, Plus, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -28,6 +38,23 @@ const AdminGospel = () => {
   const [existingId, setExistingId] = useState<string | null>(null);
   const [recent, setRecent] = useState<Row[]>([]);
   const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Row | null>(null);
+
+  const resetForm = () => {
+    const usedDates = new Set(recent.map((item) => item.gospel_date));
+    const nextDate = Array.from({ length: 31 }, (_, index) => {
+      const d = new Date();
+      d.setDate(d.getDate() + index);
+      return d.toISOString().slice(0, 10);
+    }).find((candidate) => !usedDates.has(candidate)) ?? today();
+
+    setExistingId(null);
+    setDate(nextDate);
+    setReference("");
+    setVerse("");
+    setCommentary("");
+  };
 
   const loadForDate = async (d: string) => {
     const { data } = await supabase
@@ -84,9 +111,29 @@ const AdminGospel = () => {
     loadRecent();
   };
 
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeletingId(deleteTarget.id);
+    const { error } = await supabase.from("daily_gospel").delete().eq("id", deleteTarget.id);
+    setDeletingId(null);
+    if (error) return toast.error("Suppression impossible", { description: error.message });
+    toast.success("Évangile supprimé");
+    setDeleteTarget(null);
+    if (existingId === deleteTarget.id) resetForm();
+    loadRecent();
+  };
+
   return (
     <div className="space-y-6">
-      <h2 className="font-serif text-2xl font-semibold">Évangile du jour</h2>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="font-serif text-2xl font-semibold">Évangile du jour</h2>
+          <p className="text-sm text-muted-foreground mt-1">Prépare le verset visible sur l'accueil des enfants.</p>
+        </div>
+        <Button type="button" variant="outline" onClick={resetForm}>
+          <Plus className="h-4 w-4" /> Nouvel évangile
+        </Button>
+      </div>
 
       <Card className="shadow-soft">
         <CardContent className="p-6 space-y-4">
@@ -152,12 +199,8 @@ const AdminGospel = () => {
             {recent.map((r) => {
               const scheduled = r.gospel_date > today();
               return (
-              <Card
-                key={r.id}
-                className="shadow-soft cursor-pointer hover:shadow-elevated transition-shadow"
-                onClick={() => setDate(r.gospel_date)}
-              >
-                <CardContent className="p-4 flex items-start gap-3">
+              <Card key={r.id} className="shadow-soft hover:shadow-elevated transition-shadow">
+                <CardContent className="p-4 flex flex-col gap-3 sm:flex-row sm:items-start">
                   <BookOpen className="h-4 w-4 text-accent mt-1 shrink-0" strokeWidth={1.8} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -173,6 +216,22 @@ const AdminGospel = () => {
                     <p className="font-medium mt-0.5">{r.reference}</p>
                     <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{r.verse}</p>
                   </div>
+                  <div className="flex gap-2 sm:shrink-0">
+                    <Button type="button" variant="outline" size="sm" onClick={() => setDate(r.gospel_date)}>
+                      <Pencil className="h-3.5 w-3.5" /> Modifier
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setDeleteTarget(r)}
+                      disabled={deletingId === r.id}
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      {deletingId === r.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                      Supprimer
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
               );
@@ -180,6 +239,24 @@ const AdminGospel = () => {
           </div>
         </div>
       )}
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer cet évangile ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Cette action supprimera l'évangile du {deleteTarget?.gospel_date ? format(new Date(deleteTarget.gospel_date), "d MMMM yyyy", { locale: fr }) : "jour sélectionné"}.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {deletingId && <Loader2 className="h-4 w-4 animate-spin" />}
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

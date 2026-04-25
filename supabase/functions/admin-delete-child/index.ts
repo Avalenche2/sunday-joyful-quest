@@ -4,18 +4,22 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Max-Age": "86400",
 };
+
+const json = (body: Record<string, unknown>, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response("ok", { status: 200, headers: corsHeaders });
   }
 
   if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Méthode non autorisée" }), {
-      status: 405,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: "Méthode non autorisée" }, 405);
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -23,10 +27,7 @@ Deno.serve(async (req) => {
   const authHeader = req.headers.get("Authorization");
 
   if (!supabaseUrl || !serviceRoleKey || !authHeader) {
-    return new Response(JSON.stringify({ error: "Accès refusé" }), {
-      status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: "Accès refusé" }, 401);
   }
 
   const adminClient = createClient(supabaseUrl, serviceRoleKey, {
@@ -37,10 +38,7 @@ Deno.serve(async (req) => {
   const { data: callerData, error: callerError } = await adminClient.auth.getUser(token);
 
   if (callerError || !callerData.user) {
-    return new Response(JSON.stringify({ error: "Session invalide" }), {
-      status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: "Session invalide" }, 401);
   }
 
   const { data: isAdmin, error: roleError } = await adminClient.rpc("has_role", {
@@ -49,18 +47,12 @@ Deno.serve(async (req) => {
   });
 
   if (roleError || !isAdmin) {
-    return new Response(JSON.stringify({ error: "Action réservée aux moniteurs" }), {
-      status: 403,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: "Action réservée aux moniteurs" }, 403);
   }
 
   const { userId } = await req.json().catch(() => ({ userId: null }));
   if (!userId || typeof userId !== "string") {
-    return new Response(JSON.stringify({ error: "Compte enfant invalide" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: "Compte enfant invalide" }, 400);
   }
 
   const { data: isTargetAdmin } = await adminClient.rpc("has_role", {
@@ -69,10 +61,7 @@ Deno.serve(async (req) => {
   });
 
   if (isTargetAdmin) {
-    return new Response(JSON.stringify({ error: "Un compte moniteur ne peut pas être supprimé ici" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: "Un compte moniteur ne peut pas être supprimé ici" }, 400);
   }
 
   const { data: attempts, error: attemptsError } = await adminClient
@@ -81,10 +70,7 @@ Deno.serve(async (req) => {
     .eq("user_id", userId);
 
   if (attemptsError) {
-    return new Response(JSON.stringify({ error: attemptsError.message }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: attemptsError.message }, 400);
   }
 
   const attemptIds = attempts?.map((attempt) => attempt.id) ?? [];
@@ -96,10 +82,7 @@ Deno.serve(async (req) => {
       .in("attempt_id", attemptIds);
 
     if (answersError) {
-      return new Response(JSON.stringify({ error: answersError.message }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ error: answersError.message }, 400);
     }
   }
 
@@ -112,21 +95,13 @@ Deno.serve(async (req) => {
 
   const cleanupError = cleanupSteps.find((result) => result.error)?.error;
   if (cleanupError) {
-    return new Response(JSON.stringify({ error: cleanupError.message }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: cleanupError.message }, 400);
   }
 
   const { error: deleteError } = await adminClient.auth.admin.deleteUser(userId);
   if (deleteError) {
-    return new Response(JSON.stringify({ error: deleteError.message }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: deleteError.message }, 400);
   }
 
-  return new Response(JSON.stringify({ ok: true }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
+  return json({ ok: true });
 });
