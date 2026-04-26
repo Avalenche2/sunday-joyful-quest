@@ -90,7 +90,12 @@ const AdminDailyChallenge = () => {
       return;
     }
     setSaving(true);
-    const dateStr = date.toISOString().slice(0, 10);
+    // Format local YYYY-MM-DD pour éviter le décalage UTC qui pouvait
+    // enregistrer le défi sur le jour précédent selon le fuseau horaire.
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    const dateStr = `${y}-${m}-${d}`;
     const { error } = await supabase.from("daily_challenges").upsert(
       {
         challenge_date: dateStr,
