@@ -40,11 +40,22 @@ const Classement = () => {
   useEffect(() => {
     const load = async () => {
       setLoading(true);
-      const { data: a } = await supabase
-        .from("quiz_attempts")
-        .select("user_id, score, total, completed_at");
+      const [{ data: a }, { data: adminIds }] = await Promise.all([
+        supabase
+          .from("quiz_attempts")
+          .select("user_id, score, total, completed_at"),
+        supabase.rpc("get_admin_user_ids"),
+      ]);
 
-      const list = (a ?? []) as AttemptRow[];
+      const adminSet = new Set<string>(
+        (adminIds ?? []).map((r: { get_admin_user_ids?: string } | string) =>
+          typeof r === "string" ? r : (r.get_admin_user_ids as string)
+        )
+      );
+
+      const list = ((a ?? []) as AttemptRow[]).filter(
+        (row) => !adminSet.has(row.user_id)
+      );
       setAttempts(list);
 
       const ids = Array.from(new Set(list.map((x) => x.user_id)));
