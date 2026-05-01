@@ -23,16 +23,24 @@ export const TopJuniors = () => {
       const now = new Date();
       const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
-      const [{ data: attempts }, { data: profiles }] = await Promise.all([
+      const [{ data: attempts }, { data: profiles }, { data: adminIds }] = await Promise.all([
         supabase
           .from("quiz_attempts")
           .select("user_id, score, completed_at")
           .gte("completed_at", monthStart),
         supabase.from("profiles").select("id, first_name, last_name"),
+        supabase.rpc("get_admin_user_ids"),
       ]);
+
+      const adminSet = new Set<string>(
+        (adminIds ?? []).map((r: { get_admin_user_ids?: string } | string) =>
+          typeof r === "string" ? r : (r.get_admin_user_ids as string)
+        )
+      );
 
       const totals = new Map<string, number>();
       (attempts ?? []).forEach((a: { user_id: string; score: number }) => {
+        if (adminSet.has(a.user_id)) return;
         totals.set(a.user_id, (totals.get(a.user_id) ?? 0) + a.score);
       });
 
