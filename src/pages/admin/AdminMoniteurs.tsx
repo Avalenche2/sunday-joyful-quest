@@ -247,6 +247,11 @@ const AdminMoniteurs = () => {
                               <ShieldCheck className="h-3 w-3" strokeWidth={1.8} />
                               Protégé
                             </Badge>
+                          ) : !isSuperAdmin ? (
+                            <Badge variant="outline" className="gap-1 text-[11px] text-muted-foreground">
+                              <Lock className="h-3 w-3" strokeWidth={1.8} />
+                              Réservé super admin
+                            </Badge>
                           ) : (
                             <Button
                               size="sm"
