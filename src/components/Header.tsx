@@ -106,7 +106,7 @@ export const Header = () => {
         </div>
 
         <button
-          className="lg:hidden p-2 -mr-2"
+          className="lg:hidden flex h-11 w-11 -mr-2 items-center justify-center rounded-md hover:bg-secondary/60 active:bg-secondary transition-colors"
           onClick={() => setOpen(true)}
           aria-label="Ouvrir le menu"
         >
