@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Crown, Loader2, ShieldCheck, ShieldOff, History, Users, XCircle } from "lucide-react";
+import { Crown, Loader2, Lock, ShieldCheck, ShieldOff, History, Users, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -54,7 +54,7 @@ const fmtDate = (iso: string | null) =>
     : "—";
 
 const AdminMoniteurs = () => {
-  const { user } = useAuth();
+  const { user, isSuperAdmin } = useAuth();
   const { toast } = useToast();
   const [moniteurs, setMoniteurs] = useState<Moniteur[]>([]);
   const [rejected, setRejected] = useState<RejectedRequest[]>([]);
@@ -246,6 +246,11 @@ const AdminMoniteurs = () => {
                             <Badge variant="outline" className="gap-1 text-[11px]">
                               <ShieldCheck className="h-3 w-3" strokeWidth={1.8} />
                               Protégé
+                            </Badge>
+                          ) : !isSuperAdmin ? (
+                            <Badge variant="outline" className="gap-1 text-[11px] text-muted-foreground">
+                              <Lock className="h-3 w-3" strokeWidth={1.8} />
+                              Réservé super admin
                             </Badge>
                           ) : (
                             <Button
