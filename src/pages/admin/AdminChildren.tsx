@@ -50,10 +50,10 @@ const AdminChildren = () => {
   const load = async () => {
     setLoading(true);
 
-    const { data: roles, error: rolesError } = await supabase
-      .from("user_roles")
-      .select("user_id")
-      .eq("role", "enfant");
+    const [{ data: roles, error: rolesError }, { data: adminIds }] = await Promise.all([
+      supabase.from("user_roles").select("user_id").eq("role", "enfant"),
+      supabase.rpc("get_admin_user_ids"),
+    ]);
 
     if (rolesError) {
       toast({ title: "Erreur", description: rolesError.message, variant: "destructive" });
@@ -61,7 +61,16 @@ const AdminChildren = () => {
       return;
     }
 
-    const ids = [...new Set((roles ?? []).map((r) => r.user_id))];
+    // Exclure tous les comptes ayant aussi un rôle admin / super_admin
+    const adminSet = new Set<string>(
+      (adminIds ?? []).map((r: { get_admin_user_ids?: string } | string) =>
+        typeof r === "string" ? r : (r.get_admin_user_ids as string)
+      )
+    );
+
+    const ids = [...new Set((roles ?? []).map((r) => r.user_id))].filter(
+      (id) => !adminSet.has(id)
+    );
     if (ids.length === 0) {
       setChildren([]);
       setLoading(false);

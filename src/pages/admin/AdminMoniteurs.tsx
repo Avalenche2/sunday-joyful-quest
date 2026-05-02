@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Crown, Loader2, ShieldCheck, ShieldOff, History, Users, XCircle } from "lucide-react";
+import { Crown, Loader2, Lock, ShieldCheck, ShieldOff, History, Users, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
