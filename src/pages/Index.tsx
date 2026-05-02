@@ -19,7 +19,7 @@ const Cell = ({ children, className = "" }: { children: React.ReactNode; classNa
 
 const Row = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
   <section
-    className={`container py-6 md:py-10 [&:not(:has(*>*))]:hidden ${className}`}
+    className={`container py-4 sm:py-6 md:py-10 [&:not(:has(*>*))]:hidden ${className}`}
   >
     {children}
   </section>
