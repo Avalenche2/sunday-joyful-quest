@@ -50,13 +50,14 @@ export const Header = () => {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md">
-      <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 group">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-night shadow-soft">
+      <div className="container flex h-14 sm:h-16 items-center justify-between gap-2">
+        <Link to="/" className="flex items-center gap-2 group min-w-0">
+          <span className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full bg-gradient-night shadow-soft">
             <BookOpen className="h-4 w-4 text-gold" strokeWidth={1.5} />
           </span>
-          <span className="font-serif text-xl font-semibold tracking-tight">
-            École du Dimanche
+          <span className="font-serif text-base sm:text-xl font-semibold tracking-tight truncate">
+            <span className="hidden xs:inline sm:inline">École du Dimanche</span>
+            <span className="inline xs:hidden sm:hidden">EDD</span>
           </span>
         </Link>
 
