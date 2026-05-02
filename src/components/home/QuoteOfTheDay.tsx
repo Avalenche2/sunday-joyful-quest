@@ -43,7 +43,7 @@ export const QuoteOfTheDay = () => {
 
   if (loading) {
     return (
-      <section className="rounded-2xl bg-gradient-night text-primary-foreground shadow-elevated p-12 flex justify-center">
+      <section className="rounded-2xl bg-gradient-night text-primary-foreground shadow-elevated p-10 sm:p-12 flex justify-center">
         <Loader2 className="h-5 w-5 animate-spin text-gold" />
       </section>
     );
@@ -64,7 +64,7 @@ export const QuoteOfTheDay = () => {
         <div className="absolute -bottom-32 -left-16 h-72 w-72 rounded-full bg-gold blur-3xl" />
       </div>
 
-      <div className="relative p-8 md:p-12">
+      <div className="relative p-5 sm:p-8 md:p-12">
         <div className="flex items-center gap-2 text-gold">
           <QuoteIcon className="h-4 w-4" strokeWidth={1.5} />
           <span className="text-xs uppercase tracking-[0.2em] font-medium">

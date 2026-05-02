@@ -59,7 +59,7 @@ export const QuizzOfTheWeek = () => {
   if (!quiz) return null;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 md:p-8 shadow-soft transition-smooth hover:shadow-elevated">
+    <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-5 sm:p-6 md:p-8 shadow-soft transition-smooth hover:shadow-elevated">
       <div className="absolute top-0 right-0 h-32 w-32 -translate-y-12 translate-x-12 rounded-full bg-gold/10 blur-2xl" aria-hidden />
 
       <div className="relative flex flex-col h-full">

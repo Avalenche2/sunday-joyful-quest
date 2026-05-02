@@ -38,7 +38,7 @@ export const Schedules = () => {
   if (list.length === 0) return null;
 
   return (
-    <section className="rounded-2xl border border-border bg-card p-6 md:p-8 shadow-soft">
+    <section className="rounded-2xl border border-border bg-card p-5 sm:p-6 md:p-8 shadow-soft">
       <div className="flex items-center gap-2 text-accent">
         <CalendarClock className="h-4 w-4" strokeWidth={1.5} />
         <span className="text-xs uppercase tracking-[0.2em] font-medium">
