@@ -54,7 +54,7 @@ const fmtDate = (iso: string | null) =>
     : "—";
 
 const AdminMoniteurs = () => {
-  const { user } = useAuth();
+  const { user, isSuperAdmin } = useAuth();
   const { toast } = useToast();
   const [moniteurs, setMoniteurs] = useState<Moniteur[]>([]);
   const [rejected, setRejected] = useState<RejectedRequest[]>([]);
