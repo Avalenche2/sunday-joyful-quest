@@ -186,7 +186,8 @@ const AdminMoniteurs = () => {
 
   useEffect(() => {
     load();
-  }, []);
+    if (isSuperAdmin) loadInvitations();
+  }, [isSuperAdmin]);
 
   const revoke = async (m: Moniteur) => {
     setRevoking(m.user_id);
@@ -238,7 +239,7 @@ const AdminMoniteurs = () => {
       </div>
 
       <Tabs defaultValue="actifs" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
+        <TabsList className={`grid w-full max-w-xl ${isSuperAdmin ? "grid-cols-3" : "grid-cols-2"}`}>
           <TabsTrigger value="actifs" className="gap-2">
             <Users className="h-3.5 w-3.5" />
             Actifs
@@ -246,6 +247,15 @@ const AdminMoniteurs = () => {
               {moniteurs.length}
             </Badge>
           </TabsTrigger>
+          {isSuperAdmin && (
+            <TabsTrigger value="invitations" className="gap-2">
+              <Link2 className="h-3.5 w-3.5" />
+              Invitations
+              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-[10px]">
+                {invitations.filter((i) => !i.used_at && new Date(i.expires_at) > new Date()).length}
+              </Badge>
+            </TabsTrigger>
+          )}
           <TabsTrigger value="historique" className="gap-2">
             <History className="h-3.5 w-3.5" />
             Historique
