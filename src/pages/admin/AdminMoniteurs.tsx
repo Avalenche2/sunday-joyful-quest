@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Crown, Loader2, Lock, ShieldCheck, ShieldOff, History, Users, XCircle } from "lucide-react";
+import { Copy, Crown, Link2, Loader2, Lock, Plus, ShieldCheck, ShieldOff, History, Trash2, Users, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -42,6 +42,15 @@ interface Revocation {
   last_name: string;
   email: string;
   revoked_at: string;
+}
+
+interface Invitation {
+  id: string;
+  token: string;
+  created_at: string;
+  expires_at: string;
+  used_at: string | null;
+  note: string | null;
 }
 
 const fmtDate = (iso: string | null) =>
