@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, BookMarked, Loader2 } from "lucide-react";
+import { ArrowRight, BookMarked } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -50,8 +51,16 @@ export const QuizzOfTheWeek = () => {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-border bg-card p-8 shadow-soft flex justify-center">
-        <Loader2 className="h-5 w-5 animate-spin text-accent" />
+      <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 md:p-8 shadow-soft space-y-4">
+        <div className="flex items-start justify-between">
+          <Skeleton className="h-11 w-11 rounded-full" />
+          <Skeleton className="h-5 w-16 rounded-full" />
+        </div>
+        <Skeleton className="h-6 w-3/4" />
+        <Skeleton className="h-4 w-2/3" />
+        <Skeleton className="h-3 w-full" />
+        <Skeleton className="h-3 w-5/6" />
+        <Skeleton className="h-11 w-full rounded-md mt-4" />
       </div>
     );
   }
