@@ -8,9 +8,7 @@ import { Button } from "@/components/ui/button";
 
 const AdminInvitationRedeem = () => {
   const { token } = useParams<{ token: string }>();
-  const { user, loading: authLoading, refresh } = useAuth() as ReturnType<typeof useAuth> & {
-    refresh?: () => Promise<void>;
-  };
+  const { user, loading: authLoading } = useAuth();
   const [state, setState] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -27,9 +25,8 @@ const AdminInvitationRedeem = () => {
         return;
       }
       setState("ok");
-      if (refresh) await refresh();
     })();
-  }, [authLoading, token, user, state, refresh]);
+  }, [authLoading, token, user, state]);
 
   if (!token) return <Navigate to="/admin/connexion" replace />;
 
