@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_invitations: {
+        Row: {
+          created_at: string
+          created_by: string
+          expires_at: string
+          id: string
+          note: string | null
+          token: string
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          expires_at?: string
+          id?: string
+          note?: string | null
+          token?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          expires_at?: string
+          id?: string
+          note?: string | null
+          token?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: []
+      }
       admin_requests: {
         Row: {
           created_at: string
@@ -556,6 +589,7 @@ export type Database = {
       }
     }
     Functions: {
+      create_admin_invitation: { Args: { _note?: string }; Returns: string }
       get_admin_user_ids: { Args: never; Returns: string[] }
       has_role: {
         Args: {
@@ -564,6 +598,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      redeem_admin_invitation: { Args: { _token: string }; Returns: boolean }
       request_admin_access: {
         Args: { _email: string; _first_name: string; _last_name: string }
         Returns: Database["public"]["Enums"]["admin_request_status"]

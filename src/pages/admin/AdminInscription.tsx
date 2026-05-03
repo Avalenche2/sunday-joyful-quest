@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { CheckCircle2, Loader2, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 const AdminInscription = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const inviteToken = searchParams.get("invite");
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -39,7 +41,9 @@ const AdminInscription = () => {
     }
 
     setSubmitting(true);
-    const redirectUrl = `${window.location.origin}/admin/connexion`;
+    const redirectUrl = inviteToken
+      ? `${window.location.origin}/admin/invitation/${inviteToken}`
+      : `${window.location.origin}/admin/connexion`;
     const { data, error } = await supabase.auth.signUp({
       email: parsed.data.email,
       password: parsed.data.password,
@@ -63,6 +67,19 @@ const AdminInscription = () => {
     }
 
     if (data.user) {
+      // Si invitation : on tente de la consommer immédiatement
+      if (inviteToken) {
+        const { error: redeemErr } = await supabase.rpc("redeem_admin_invitation" as never, {
+          _token: inviteToken,
+        } as never);
+        if (!redeemErr) {
+          setSubmitted("approved");
+          setSubmitting(false);
+          return;
+        }
+        // sinon on retombe sur le flux de demande standard
+      }
+
       const { data: status, error: reqError } = await supabase.rpc("request_admin_access" as never, {
         _first_name: parsed.data.firstName,
         _last_name: parsed.data.lastName,

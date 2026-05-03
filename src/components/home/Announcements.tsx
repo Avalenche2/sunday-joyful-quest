@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Loader2, Megaphone } from "lucide-react";
+import { ArrowRight, Megaphone } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Announcement {
@@ -38,8 +39,18 @@ export const Announcements = () => {
 
   if (loading) {
     return (
-      <section className="rounded-2xl border border-border bg-card p-8 shadow-soft flex justify-center">
-        <Loader2 className="h-5 w-5 animate-spin text-accent" />
+      <section className="rounded-2xl border border-border bg-card p-4 sm:p-6 md:p-8 shadow-soft">
+        <Skeleton className="h-3 w-24" />
+        <Skeleton className="mt-3 h-6 w-32" />
+        <div className="mt-6 space-y-4">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="pl-5 border-l-2 border-border space-y-2">
+              <Skeleton className="h-3 w-24" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3 w-full" />
+            </div>
+          ))}
+        </div>
       </section>
     );
   }
@@ -47,7 +58,7 @@ export const Announcements = () => {
   if (list.length === 0) return null;
 
   return (
-    <section className="rounded-2xl border border-border bg-card p-5 sm:p-6 md:p-8 shadow-soft">
+    <section className="rounded-2xl border border-border bg-card p-4 sm:p-6 md:p-8 shadow-soft">
       <div className="flex items-center gap-2 text-accent">
         <Megaphone className="h-4 w-4" strokeWidth={1.5} />
         <span className="text-xs uppercase tracking-[0.2em] font-medium">

@@ -19,7 +19,7 @@ const Cell = ({ children, className = "" }: { children: React.ReactNode; classNa
 
 const Row = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
   <section
-    className={`container py-4 sm:py-6 md:py-10 [&:not(:has(*>*))]:hidden ${className}`}
+    className={`container px-3 sm:px-6 py-3 sm:py-6 md:py-10 [&:not(:has(*>*))]:hidden ${className}`}
   >
     {children}
   </section>
@@ -32,7 +32,7 @@ const Index = () => {
 
       <main className="flex-1">
         {/* Bienvenue */}
-        <section className="container pt-6 sm:pt-8 md:pt-12 pb-2">
+        <section className="container px-3 sm:px-6 pt-5 sm:pt-8 md:pt-12 pb-2">
           <div className="text-center max-w-2xl mx-auto animate-fade-in-up">
             <p className="text-[11px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.3em] text-accent font-medium">
               Bienvenue

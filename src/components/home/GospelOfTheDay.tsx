@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Loader2, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Gospel {
@@ -44,8 +45,18 @@ export const GospelOfTheDay = () => {
 
   if (loading) {
     return (
-      <section className="rounded-2xl bg-gradient-night text-primary-foreground shadow-elevated p-10 sm:p-12 flex justify-center">
-        <Loader2 className="h-5 w-5 animate-spin text-gold" />
+      <section className="rounded-2xl bg-gradient-night text-primary-foreground shadow-elevated p-5 sm:p-8 md:p-12">
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-4 w-4 rounded bg-primary-foreground/10" />
+          <Skeleton className="h-3 w-28 bg-primary-foreground/10" />
+        </div>
+        <Skeleton className="mt-4 h-3 w-40 bg-primary-foreground/10" />
+        <div className="mt-6 space-y-3">
+          <Skeleton className="h-5 w-full bg-primary-foreground/10" />
+          <Skeleton className="h-5 w-11/12 bg-primary-foreground/10" />
+          <Skeleton className="h-5 w-3/4 bg-primary-foreground/10" />
+        </div>
+        <Skeleton className="mt-5 h-3 w-24 bg-primary-foreground/10" />
       </section>
     );
   }

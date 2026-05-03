@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Crown, Loader2, Lock, ShieldCheck, ShieldOff, History, Users, XCircle } from "lucide-react";
+import { Copy, Crown, Link2, Loader2, Lock, Plus, ShieldCheck, ShieldOff, History, Trash2, Users, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,6 +45,15 @@ interface Revocation {
   revoked_at: string;
 }
 
+interface Invitation {
+  id: string;
+  token: string;
+  created_at: string;
+  expires_at: string;
+  used_at: string | null;
+  note: string | null;
+}
+
 const fmtDate = (iso: string | null) =>
   iso
     ? new Date(iso).toLocaleDateString("fr-FR", {
@@ -59,9 +69,63 @@ const AdminMoniteurs = () => {
   const [moniteurs, setMoniteurs] = useState<Moniteur[]>([]);
   const [rejected, setRejected] = useState<RejectedRequest[]>([]);
   const [revocations, setRevocations] = useState<Revocation[]>([]);
+  const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [loading, setLoading] = useState(true);
   const [revoking, setRevoking] = useState<string | null>(null);
   const [confirmTarget, setConfirmTarget] = useState<Moniteur | null>(null);
+  const [creatingInvite, setCreatingInvite] = useState(false);
+  const [inviteNote, setInviteNote] = useState("");
+
+  const inviteUrl = (token: string) => `${window.location.origin}/admin/invitation/${token}`;
+
+  const loadInvitations = async () => {
+    const { data } = await supabase
+      .from("admin_invitations")
+      .select("id, token, created_at, expires_at, used_at, note")
+      .order("created_at", { ascending: false });
+    setInvitations((data ?? []) as Invitation[]);
+  };
+
+  const createInvitation = async () => {
+    setCreatingInvite(true);
+    const { data, error } = await supabase.rpc("create_admin_invitation" as never, {
+      _note: inviteNote || null,
+    } as never);
+    setCreatingInvite(false);
+    if (error) {
+      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      return;
+    }
+    setInviteNote("");
+    if (typeof data === "string") {
+      try {
+        await navigator.clipboard.writeText(inviteUrl(data));
+        toast({ title: "Lien créé et copié", description: "Partage-le au futur moniteur." });
+      } catch {
+        toast({ title: "Lien créé", description: "Copie-le depuis la liste ci-dessous." });
+      }
+    }
+    loadInvitations();
+  };
+
+  const copyLink = async (token: string) => {
+    try {
+      await navigator.clipboard.writeText(inviteUrl(token));
+      toast({ title: "Lien copié" });
+    } catch {
+      toast({ title: "Impossible de copier", variant: "destructive" });
+    }
+  };
+
+  const deleteInvitation = async (id: string) => {
+    const { error } = await supabase.from("admin_invitations").delete().eq("id", id);
+    if (error) {
+      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Invitation supprimée" });
+    loadInvitations();
+  };
 
   const load = async () => {
     setLoading(true);
@@ -123,7 +187,8 @@ const AdminMoniteurs = () => {
 
   useEffect(() => {
     load();
-  }, []);
+    if (isSuperAdmin) loadInvitations();
+  }, [isSuperAdmin]);
 
   const revoke = async (m: Moniteur) => {
     setRevoking(m.user_id);
@@ -175,7 +240,7 @@ const AdminMoniteurs = () => {
       </div>
 
       <Tabs defaultValue="actifs" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
+        <TabsList className={`grid w-full max-w-xl ${isSuperAdmin ? "grid-cols-3" : "grid-cols-2"}`}>
           <TabsTrigger value="actifs" className="gap-2">
             <Users className="h-3.5 w-3.5" />
             Actifs
@@ -183,6 +248,15 @@ const AdminMoniteurs = () => {
               {moniteurs.length}
             </Badge>
           </TabsTrigger>
+          {isSuperAdmin && (
+            <TabsTrigger value="invitations" className="gap-2">
+              <Link2 className="h-3.5 w-3.5" />
+              Invitations
+              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-[10px]">
+                {invitations.filter((i) => !i.used_at && new Date(i.expires_at) > new Date()).length}
+              </Badge>
+            </TabsTrigger>
+          )}
           <TabsTrigger value="historique" className="gap-2">
             <History className="h-3.5 w-3.5" />
             Historique
@@ -277,6 +351,108 @@ const AdminMoniteurs = () => {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* === Onglet Invitations (super admin) === */}
+        {isSuperAdmin && (
+          <TabsContent value="invitations" className="mt-4 space-y-4">
+            <Card className="shadow-soft">
+              <CardContent className="p-4 sm:p-6 space-y-4">
+                <div>
+                  <h3 className="font-serif text-base">Inviter un nouveau moniteur</h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Génère un lien unique. Le destinataire crée son compte puis devient
+                    automatiquement moniteur. Lien valable 14 jours, à usage unique.
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Input
+                    placeholder="Note (optionnel : nom de la personne)"
+                    value={inviteNote}
+                    onChange={(e) => setInviteNote(e.target.value)}
+                  />
+                  <Button onClick={createInvitation} disabled={creatingInvite}>
+                    {creatingInvite ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Plus className="h-4 w-4" />
+                    )}
+                    Créer un lien
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-soft">
+              <CardContent className="p-0">
+                <div className="px-4 sm:px-6 py-4 border-b border-border/60 flex items-center gap-2">
+                  <Link2 className="h-4 w-4 text-muted-foreground" strokeWidth={1.8} />
+                  <h3 className="font-serif text-base">Liens d'invitation</h3>
+                  <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-[10px]">
+                    {invitations.length}
+                  </Badge>
+                </div>
+                {invitations.length === 0 ? (
+                  <div className="p-8 text-center text-sm text-muted-foreground">
+                    Aucun lien d'invitation pour le moment.
+                  </div>
+                ) : (
+                  <ul className="divide-y divide-border/60">
+                    {invitations.map((inv) => {
+                      const expired = new Date(inv.expires_at) < new Date();
+                      const used = !!inv.used_at;
+                      const status = used ? "Utilisée" : expired ? "Expirée" : "Active";
+                      const statusVariant = used || expired ? "secondary" : "default";
+                      return (
+                        <li
+                          key={inv.id}
+                          className="px-4 sm:px-6 py-3 flex flex-col sm:flex-row sm:items-center gap-2"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <Badge
+                                variant={statusVariant as "default" | "secondary"}
+                                className="h-5 px-2 text-[10px] uppercase tracking-wider"
+                              >
+                                {status}
+                              </Badge>
+                              {inv.note && (
+                                <span className="text-xs text-muted-foreground truncate">
+                                  {inv.note}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[11px] text-muted-foreground mt-1 break-all font-mono">
+                              {inviteUrl(inv.token)}
+                            </p>
+                            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">
+                              Créée le {fmtDate(inv.created_at)} · Expire le {fmtDate(inv.expires_at)}
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            {!used && !expired && (
+                              <Button size="sm" variant="outline" onClick={() => copyLink(inv.token)}>
+                                <Copy className="h-3.5 w-3.5" />
+                                Copier
+                              </Button>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => deleteInvitation(inv.id)}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
 
         {/* === Onglet Historique === */}
         <TabsContent value="historique" className="mt-4 space-y-6">

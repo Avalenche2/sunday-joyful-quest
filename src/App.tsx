@@ -31,6 +31,7 @@ import AdminDailyChallenge from "./pages/admin/AdminDailyChallenge.tsx";
 import AdminConnexion from "./pages/admin/AdminConnexion.tsx";
 import AdminInscription from "./pages/admin/AdminInscription.tsx";
 import AdminMoniteurs from "./pages/admin/AdminMoniteurs.tsx";
+import AdminInvitationRedeem from "./pages/admin/AdminInvitationRedeem.tsx";
 import AdminChildren from "./pages/admin/AdminChildren.tsx";
 import AdminProfil from "./pages/admin/AdminProfil.tsx";
 import { OfflineBanner } from "./components/OfflineBanner.tsx";
@@ -82,6 +83,7 @@ const App = () => (
               element={<MotDePasseOublie admin />}
             />
             <Route path="/admin/inscription" element={<AdminInscription />} />
+            <Route path="/admin/invitation/:token" element={<AdminInvitationRedeem />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="quizz" element={<AdminQuizzes />} />
