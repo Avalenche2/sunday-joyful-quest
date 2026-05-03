@@ -68,9 +68,63 @@ const AdminMoniteurs = () => {
   const [moniteurs, setMoniteurs] = useState<Moniteur[]>([]);
   const [rejected, setRejected] = useState<RejectedRequest[]>([]);
   const [revocations, setRevocations] = useState<Revocation[]>([]);
+  const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [loading, setLoading] = useState(true);
   const [revoking, setRevoking] = useState<string | null>(null);
   const [confirmTarget, setConfirmTarget] = useState<Moniteur | null>(null);
+  const [creatingInvite, setCreatingInvite] = useState(false);
+  const [inviteNote, setInviteNote] = useState("");
+
+  const inviteUrl = (token: string) => `${window.location.origin}/admin/invitation/${token}`;
+
+  const loadInvitations = async () => {
+    const { data } = await supabase
+      .from("admin_invitations")
+      .select("id, token, created_at, expires_at, used_at, note")
+      .order("created_at", { ascending: false });
+    setInvitations((data ?? []) as Invitation[]);
+  };
+
+  const createInvitation = async () => {
+    setCreatingInvite(true);
+    const { data, error } = await supabase.rpc("create_admin_invitation" as never, {
+      _note: inviteNote || null,
+    } as never);
+    setCreatingInvite(false);
+    if (error) {
+      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      return;
+    }
+    setInviteNote("");
+    if (typeof data === "string") {
+      try {
+        await navigator.clipboard.writeText(inviteUrl(data));
+        toast({ title: "Lien créé et copié", description: "Partage-le au futur moniteur." });
+      } catch {
+        toast({ title: "Lien créé", description: "Copie-le depuis la liste ci-dessous." });
+      }
+    }
+    loadInvitations();
+  };
+
+  const copyLink = async (token: string) => {
+    try {
+      await navigator.clipboard.writeText(inviteUrl(token));
+      toast({ title: "Lien copié" });
+    } catch {
+      toast({ title: "Impossible de copier", variant: "destructive" });
+    }
+  };
+
+  const deleteInvitation = async (id: string) => {
+    const { error } = await supabase.from("admin_invitations").delete().eq("id", id);
+    if (error) {
+      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Invitation supprimée" });
+    loadInvitations();
+  };
 
   const load = async () => {
     setLoading(true);
