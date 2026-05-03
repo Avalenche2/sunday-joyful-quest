@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -350,6 +351,108 @@ const AdminMoniteurs = () => {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* === Onglet Invitations (super admin) === */}
+        {isSuperAdmin && (
+          <TabsContent value="invitations" className="mt-4 space-y-4">
+            <Card className="shadow-soft">
+              <CardContent className="p-4 sm:p-6 space-y-4">
+                <div>
+                  <h3 className="font-serif text-base">Inviter un nouveau moniteur</h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Génère un lien unique. Le destinataire crée son compte puis devient
+                    automatiquement moniteur. Lien valable 14 jours, à usage unique.
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Input
+                    placeholder="Note (optionnel : nom de la personne)"
+                    value={inviteNote}
+                    onChange={(e) => setInviteNote(e.target.value)}
+                  />
+                  <Button onClick={createInvitation} disabled={creatingInvite}>
+                    {creatingInvite ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Plus className="h-4 w-4" />
+                    )}
+                    Créer un lien
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-soft">
+              <CardContent className="p-0">
+                <div className="px-4 sm:px-6 py-4 border-b border-border/60 flex items-center gap-2">
+                  <Link2 className="h-4 w-4 text-muted-foreground" strokeWidth={1.8} />
+                  <h3 className="font-serif text-base">Liens d'invitation</h3>
+                  <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-[10px]">
+                    {invitations.length}
+                  </Badge>
+                </div>
+                {invitations.length === 0 ? (
+                  <div className="p-8 text-center text-sm text-muted-foreground">
+                    Aucun lien d'invitation pour le moment.
+                  </div>
+                ) : (
+                  <ul className="divide-y divide-border/60">
+                    {invitations.map((inv) => {
+                      const expired = new Date(inv.expires_at) < new Date();
+                      const used = !!inv.used_at;
+                      const status = used ? "Utilisée" : expired ? "Expirée" : "Active";
+                      const statusVariant = used || expired ? "secondary" : "default";
+                      return (
+                        <li
+                          key={inv.id}
+                          className="px-4 sm:px-6 py-3 flex flex-col sm:flex-row sm:items-center gap-2"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <Badge
+                                variant={statusVariant as "default" | "secondary"}
+                                className="h-5 px-2 text-[10px] uppercase tracking-wider"
+                              >
+                                {status}
+                              </Badge>
+                              {inv.note && (
+                                <span className="text-xs text-muted-foreground truncate">
+                                  {inv.note}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[11px] text-muted-foreground mt-1 break-all font-mono">
+                              {inviteUrl(inv.token)}
+                            </p>
+                            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">
+                              Créée le {fmtDate(inv.created_at)} · Expire le {fmtDate(inv.expires_at)}
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            {!used && !expired && (
+                              <Button size="sm" variant="outline" onClick={() => copyLink(inv.token)}>
+                                <Copy className="h-3.5 w-3.5" />
+                                Copier
+                              </Button>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => deleteInvitation(inv.id)}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
 
         {/* === Onglet Historique === */}
         <TabsContent value="historique" className="mt-4 space-y-6">
