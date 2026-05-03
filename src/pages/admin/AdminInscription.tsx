@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { CheckCircle2, Loader2, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 const AdminInscription = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const inviteToken = searchParams.get("invite");
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
