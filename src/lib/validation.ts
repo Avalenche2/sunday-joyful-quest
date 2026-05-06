@@ -57,15 +57,18 @@ export const profileUpdateSchema = z.object({
     .max(18, "Âge maximum : 18 ans"),
 });
 
-export const adminSignUpSchema = z.object({
-  firstName: z.string().trim().min(1, "Prénom requis").max(50, "Prénom trop long"),
-  lastName: z.string().trim().min(1, "Nom requis").max(50, "Nom trop long"),
-  email: z.string().trim().email("Email invalide").max(255),
-  password: z
-    .string()
-    .min(8, "Mot de passe : 8 caractères minimum")
-    .max(72, "Mot de passe trop long"),
-});
+export const adminSignUpSchema = z
+  .object({
+    firstName: z.string().trim().min(1, "Prénom requis").max(50, "Prénom trop long"),
+    lastName: z.string().trim().min(1, "Nom requis").max(50, "Nom trop long"),
+    email: z.string().trim().email("Email invalide").max(255),
+    password: strongPassword,
+    confirmPassword: z.string().min(1, "Confirmation requise"),
+  })
+  .refine((d) => d.password === d.confirmPassword, {
+    message: "Les mots de passe ne correspondent pas",
+    path: ["confirmPassword"],
+  });
 
 export type SignUpInput = z.infer<typeof signUpSchema>;
 export type SignInInput = z.infer<typeof signInSchema>;
