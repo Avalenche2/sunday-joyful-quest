@@ -55,7 +55,7 @@ export const RecentQuizzes = () => {
 
   if (loading) {
     return (
-      <section className="rounded-2xl border border-border bg-card p-8 shadow-soft flex justify-center">
+      <section className="rounded-2xl border border-border bg-card p-6 shadow-soft flex justify-center">
         <Loader2 className="h-5 w-5 animate-spin text-accent" />
       </section>
     );
@@ -64,48 +64,52 @@ export const RecentQuizzes = () => {
   if (list.length === 0) return null;
 
   return (
-    <section className="rounded-2xl border border-border bg-card p-4 sm:p-6 md:p-8 shadow-soft">
-      <div className="flex items-center justify-between gap-3">
-        <div>
+    <section className="rounded-2xl border border-border bg-card p-3 sm:p-6 md:p-8 shadow-soft">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
           <div className="flex items-center gap-2 text-accent">
-            <History className="h-4 w-4" strokeWidth={1.5} />
-            <span className="text-xs uppercase tracking-[0.2em] font-medium">
+            <History className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={1.5} />
+            <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] font-medium">
               Historique
             </span>
           </div>
-          <h2 className="mt-2 font-serif text-2xl font-semibold">
+          <h2 className="mt-1.5 sm:mt-2 font-serif text-xl sm:text-2xl font-semibold leading-tight">
             Les derniers quizz
           </h2>
         </div>
         <Link
           to="/quizz"
-          className="hidden sm:flex items-center gap-1 text-sm text-accent hover:text-accent/80 transition-colors"
+          className="shrink-0 inline-flex items-center gap-1 text-xs sm:text-sm text-accent hover:text-accent/80 transition-colors mt-1"
+          aria-label="Voir tous les quizz"
         >
-          Tout voir <ArrowRight className="h-3.5 w-3.5" />
+          <span className="hidden xs:inline">Tout voir</span>
+          <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
 
-      <div className="mt-6 divide-y divide-border/60">
+      <ul className="mt-4 sm:mt-6 divide-y divide-border/60">
         {list.map((q) => (
-          <Link
-            key={q.id}
-            to={`/quizz/${q.id}`}
-            className="flex items-center gap-4 py-3 group transition-smooth hover:pl-2"
-          >
-            <span className="text-xs font-medium text-muted-foreground w-16 shrink-0">
-              {fmtShortDate(q.publish_date)}
-            </span>
-            <span className="flex-1 font-medium group-hover:text-accent transition-colors truncate">
-              {q.title}
-            </span>
-            {q.participants > 0 && (
-              <span className="text-xs text-muted-foreground shrink-0">
-                {q.participants} junior{q.participants > 1 ? "s" : ""}
+          <li key={q.id}>
+            <Link
+              to={`/quizz/${q.id}`}
+              className="flex items-center gap-3 sm:gap-4 py-2.5 sm:py-3 group transition-smooth active:bg-muted/40 sm:hover:pl-2 -mx-1 px-1 rounded-md min-h-11"
+            >
+              <span className="text-[11px] sm:text-xs font-medium text-muted-foreground w-12 sm:w-16 shrink-0 tabular-nums">
+                {fmtShortDate(q.publish_date)}
               </span>
-            )}
-          </Link>
+              <span className="flex-1 text-sm sm:text-base font-medium group-hover:text-accent transition-colors truncate">
+                {q.title}
+              </span>
+              {q.participants > 0 && (
+                <span className="text-[10px] sm:text-xs text-muted-foreground shrink-0 tabular-nums">
+                  {q.participants}<span className="hidden sm:inline"> junior{q.participants > 1 ? "s" : ""}</span>
+                  <span className="sm:hidden"> j.</span>
+                </span>
+              )}
+            </Link>
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
   );
 };
