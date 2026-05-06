@@ -203,6 +203,24 @@ const AdminInscription = () => {
             required
           />
           {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
+          <p className="text-xs text-muted-foreground">
+            8 caractères min, avec majuscule, minuscule et chiffre.
+          </p>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+          <Input
+            id="confirmPassword"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            autoComplete="new-password"
+            required
+          />
+          {errors.confirmPassword && (
+            <p className="text-xs text-destructive">{errors.confirmPassword}</p>
+          )}
         </div>
 
         <p className="text-[11px] text-muted-foreground leading-relaxed">
