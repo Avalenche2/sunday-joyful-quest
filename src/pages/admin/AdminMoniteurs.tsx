@@ -76,7 +76,7 @@ const AdminMoniteurs = () => {
   const [creatingInvite, setCreatingInvite] = useState(false);
   const [inviteNote, setInviteNote] = useState("");
 
-  const inviteUrl = (token: string) => `${window.location.origin}/admin/invitation/${token}`;
+  const inviteUrl = (token: string) => `${window.location.origin}/admin/inscription?invite=${token}`;
 
   const loadInvitations = async () => {
     const { data } = await supabase
