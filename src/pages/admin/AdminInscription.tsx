@@ -13,8 +13,6 @@ import { Label } from "@/components/ui/label";
 const AdminInscription = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
   const { toast } = useToast();
-  const [searchParams] = useSearchParams();
-  const inviteToken = searchParams.get("invite");
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
