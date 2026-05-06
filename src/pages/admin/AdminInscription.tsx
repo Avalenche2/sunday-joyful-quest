@@ -67,18 +67,8 @@ const AdminInscription = () => {
     }
 
     if (data.user) {
-      // Si invitation : on tente de la consommer immédiatement
-      if (inviteToken) {
-        const { error: redeemErr } = await supabase.rpc("redeem_admin_invitation" as never, {
-          _token: inviteToken,
-        } as never);
-        if (!redeemErr) {
-          setSubmitted("approved");
-          setSubmitting(false);
-          return;
-        }
-        // sinon on retombe sur le flux de demande standard
-      }
+      // Le lien d'invitation conduit ici : on crée la demande comme d'habitude,
+      // elle sera ensuite validée par le super admin.
 
       const { data: status, error: reqError } = await supabase.rpc("request_admin_access" as never, {
         _first_name: parsed.data.firstName,
