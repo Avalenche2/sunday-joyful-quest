@@ -41,9 +41,7 @@ const AdminInscription = () => {
     }
 
     setSubmitting(true);
-    const redirectUrl = inviteToken
-      ? `${window.location.origin}/admin/invitation/${inviteToken}`
-      : `${window.location.origin}/admin/connexion`;
+    const redirectUrl = `${window.location.origin}/admin/connexion`;
     const { data, error } = await supabase.auth.signUp({
       email: parsed.data.email,
       password: parsed.data.password,
