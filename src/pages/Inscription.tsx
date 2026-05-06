@@ -44,6 +44,7 @@ const Inscription = () => {
       parentPhone,
       email,
       password,
+      confirmPassword,
     });
 
     if (!parsed.success) {
