@@ -23,6 +23,7 @@ const Inscription = () => {
   const [parentPhone, setParentPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const submitLockRef = useRef(false);
