@@ -29,7 +29,7 @@ const AdminInscription = () => {
     e.preventDefault();
     setErrors({});
 
-    const parsed = adminSignUpSchema.safeParse({ firstName, lastName, email, password });
+    const parsed = adminSignUpSchema.safeParse({ firstName, lastName, email, password, confirmPassword });
     if (!parsed.success) {
       const fieldErrors: Record<string, string> = {};
       parsed.error.issues.forEach((i) => {
