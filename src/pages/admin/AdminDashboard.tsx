@@ -94,23 +94,23 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 lg:space-y-8">
       <PendingAdminRequests />
 
       <Card className="overflow-hidden border-border/60 bg-gradient-night text-primary-foreground shadow-elevated">
-        <CardContent className="p-6 md:p-8 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-          <div className="max-w-2xl">
+        <CardContent className="p-6 md:p-8 lg:p-10 xl:p-12 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+          <div className="max-w-2xl lg:max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 px-3 py-1 text-xs font-medium">
               <Sparkles className="h-3.5 w-3.5" /> Centre de mission
             </div>
-            <h2 className="mt-4 font-serif text-3xl md:text-4xl font-semibold leading-tight">
+            <h2 className="mt-4 font-serif text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight">
               Pilote l'école du dimanche en un coup d'œil.
             </h2>
-            <p className="mt-2 text-sm text-primary-foreground/75">
+            <p className="mt-2 lg:mt-3 text-sm lg:text-base text-primary-foreground/75">
               Accède vite aux contenus du jour, aux enfants inscrits et aux actions importantes.
             </p>
           </div>
-          <Button asChild variant="secondary" className="w-full md:w-auto">
+          <Button asChild variant="secondary" size="lg" className="w-full md:w-auto shrink-0">
             <Link to="/admin/statistiques">
               Voir les statistiques <ArrowRight className="h-4 w-4" />
             </Link>
@@ -118,7 +118,7 @@ const AdminDashboard = () => {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-4 xl:gap-5">
         {cards.map((c) => {
           const Icon = c.icon;
           const highlight = c.accent && (c.value ?? 0) > 0;
@@ -126,20 +126,20 @@ const AdminDashboard = () => {
             <Link key={c.label} to={c.to}>
               <Card
                 className={
-                  "shadow-soft hover:shadow-elevated transition-shadow " +
+                  "h-full shadow-soft hover:shadow-elevated hover:-translate-y-0.5 transition-all " +
                   (highlight ? "border-gold/40 bg-gold/5" : "")
                 }
               >
-                <CardContent className="p-5">
+                <CardContent className="p-5 lg:p-6">
                   <div className="flex items-center justify-between gap-3">
                     <Icon
-                      className={"h-4 w-4 " + (highlight ? "text-gold" : "text-accent")}
+                      className={"h-4 w-4 lg:h-5 lg:w-5 " + (highlight ? "text-gold" : "text-accent")}
                       strokeWidth={1.8}
                     />
                     {highlight && <CheckCircle2 className="h-4 w-4 text-gold" strokeWidth={1.8} />}
                   </div>
-                  <p className="mt-3 font-serif text-3xl font-semibold leading-none">{c.value ?? "—"}</p>
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1">
+                  <p className="mt-3 lg:mt-4 font-serif text-3xl lg:text-4xl font-semibold leading-none">{c.value ?? "—"}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1 lg:mt-2">
                     {c.label}
                   </p>
                   <p className="mt-2 text-xs text-muted-foreground line-clamp-1">{c.detail}</p>
@@ -151,13 +151,13 @@ const AdminDashboard = () => {
       </div>
 
       <Card className="border-border/60 shadow-soft">
-        <CardContent className="p-6">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <CardContent className="p-6 lg:p-8">
+          <div className="flex flex-col gap-4 lg:gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h3 className="font-serif text-xl font-semibold">Actions rapides</h3>
+              <h3 className="font-serif text-xl lg:text-2xl font-semibold">Actions rapides</h3>
               <p className="text-sm text-muted-foreground mt-1">Les raccourcis les plus utilisés par les moniteurs.</p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 w-full md:w-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-3 w-full lg:w-auto">
               {quickActions.map((action) => {
                 const Icon = action.icon;
                 return (
