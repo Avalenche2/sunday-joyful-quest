@@ -167,7 +167,7 @@ export const AdminLayout = () => {
 
   return (
     <Shell>
-      <section className="container py-6 md:py-12 px-4 md:px-8">
+      <section className="container py-6 md:py-12 lg:py-14 px-4 md:px-8">
         <div className="mb-6 md:mb-8">
           <div className="flex items-center gap-3 flex-wrap">
             <p className="text-[10px] md:text-xs uppercase tracking-[0.25em] md:tracking-[0.3em] text-accent font-medium">
@@ -180,7 +180,7 @@ export const AdminLayout = () => {
               </Badge>
             )}
           </div>
-          <h1 className="mt-2 font-serif text-2xl md:text-4xl font-semibold leading-[1.1]">
+          <h1 className="mt-2 font-serif text-2xl md:text-4xl lg:text-5xl font-semibold leading-[1.1]">
             Administration
           </h1>
           <div className="mt-4 md:mt-5 h-px w-12 bg-accent" />
@@ -221,7 +221,7 @@ export const AdminLayout = () => {
           />
         )}
 
-        <div className="grid gap-6 lg:gap-8 lg:grid-cols-[200px_1fr] xl:grid-cols-[240px_1fr]">
+        <div className="grid gap-6 lg:gap-8 xl:gap-10 lg:grid-cols-[220px_1fr] xl:grid-cols-[260px_1fr]">
           <aside
             ref={asideRef}
             className={cn(

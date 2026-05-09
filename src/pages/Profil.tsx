@@ -156,11 +156,11 @@ const Profil = () => {
         firstName={profile?.first_name}
       />
       <main className="flex-1">
-        <section className="container py-8 md:py-12">
+        <section className="container py-8 md:py-12 lg:py-16">
           <p className="text-xs uppercase tracking-[0.3em] text-accent font-medium">
             Mon profil
           </p>
-          <h1 className="mt-2 font-serif text-3xl md:text-5xl font-semibold leading-[1.1]">
+          <h1 className="mt-2 font-serif text-3xl md:text-5xl lg:text-6xl font-semibold leading-[1.1]">
             Mon parcours
           </h1>
           <div className="mt-5 h-px w-12 bg-accent" />
@@ -170,7 +170,7 @@ const Profil = () => {
               <Loader2 className="h-6 w-6 animate-spin text-accent" />
             </div>
           ) : (
-            <div className="mt-8 grid gap-8 lg:grid-cols-3">
+            <div className="mt-8 grid gap-8 lg:gap-10 xl:gap-12 lg:grid-cols-3">
               {/* Colonne identité + stats */}
               <div className="lg:col-span-1 space-y-6">
                 <Card className="shadow-soft">

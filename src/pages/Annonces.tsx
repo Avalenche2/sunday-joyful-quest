@@ -82,7 +82,7 @@ const Annonces = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      <main className="flex-1 container max-w-3xl py-12 md:py-16">
+      <main className="flex-1 container max-w-3xl lg:max-w-4xl py-12 md:py-16 lg:py-20">
         <Link
           to="/"
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-accent transition-smooth mb-6"
