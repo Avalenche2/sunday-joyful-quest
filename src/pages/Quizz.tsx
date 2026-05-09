@@ -110,15 +110,15 @@ const Quizz = () => {
 
       <main className="flex-1">
         {/* En-tête */}
-        <section className="container py-8 md:py-12">
-          <div className="max-w-2xl">
+        <section className="container py-8 md:py-12 lg:py-16">
+          <div className="max-w-2xl lg:max-w-3xl">
             <p className="text-xs uppercase tracking-[0.3em] text-accent font-medium">
               Calendrier
             </p>
-            <h1 className="mt-2 font-serif text-3xl md:text-5xl font-semibold leading-[1.1]">
+            <h1 className="mt-2 font-serif text-3xl md:text-5xl lg:text-6xl font-semibold leading-[1.1]">
               Tous les quizz bibliques
             </h1>
-            <p className="mt-3 text-muted-foreground">
+            <p className="mt-3 lg:mt-4 text-muted-foreground lg:text-lg">
               Retrouve tous les quizz publiés. Filtre par date ou par statut
               pour voir ceux que tu n'as pas encore faits.
             </p>
@@ -198,7 +198,7 @@ const Quizz = () => {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 lg:gap-6 xl:gap-7 sm:grid-cols-2 lg:grid-cols-3">
               {visible.map((q) => {
                 const done = doneIds.has(q.id);
                 const fresh = isCurrent(q.publish_date);

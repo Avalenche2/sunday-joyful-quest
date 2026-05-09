@@ -54,15 +54,15 @@ const Citations = () => {
       <Header />
 
       <main className="flex-1">
-        <section className="container pt-12 pb-8">
-          <div className="max-w-2xl">
+        <section className="container pt-12 lg:pt-16 pb-8">
+          <div className="max-w-2xl lg:max-w-3xl">
             <p className="text-xs uppercase tracking-[0.3em] text-accent font-medium">
               Archive spirituelle
             </p>
-            <h1 className="mt-3 font-serif text-4xl md:text-5xl font-semibold leading-[1.1]">
+            <h1 className="mt-3 font-serif text-4xl md:text-5xl lg:text-6xl font-semibold leading-[1.1]">
               Citations de Frère Branham
             </h1>
-            <p className="mt-4 text-muted-foreground leading-relaxed">
+            <p className="mt-4 text-muted-foreground leading-relaxed lg:text-lg">
               Retrouve toutes les citations de Frère William Marrion Branham
               partagées jour après jour.
             </p>

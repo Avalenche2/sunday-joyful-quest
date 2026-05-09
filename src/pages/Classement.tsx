@@ -117,15 +117,15 @@ const Classement = () => {
       <Header />
 
       <main className="flex-1">
-        <section className="container py-8 md:py-12">
-          <div className="max-w-2xl">
+        <section className="container py-8 md:py-12 lg:py-16">
+          <div className="max-w-2xl lg:max-w-3xl">
             <p className="text-xs uppercase tracking-[0.3em] text-accent font-medium">
               Classement
             </p>
-            <h1 className="mt-2 font-serif text-3xl md:text-5xl font-semibold leading-[1.1]">
+            <h1 className="mt-2 font-serif text-3xl md:text-5xl lg:text-6xl font-semibold leading-[1.1]">
               Les meilleurs juniors
             </h1>
-            <p className="mt-3 text-muted-foreground">
+            <p className="mt-3 lg:mt-4 text-muted-foreground lg:text-lg">
               Découvre les enfants qui ont accumulé le plus de bonnes réponses
               ce mois-ci et depuis le début.
             </p>
@@ -191,7 +191,7 @@ const RankingList = ({
   const top = list.slice(0, 10);
 
   return (
-    <div className="space-y-3 max-w-3xl">
+    <div className="space-y-3 max-w-3xl lg:max-w-4xl">
       {top.map((r, i) => (
         <RankRow key={r.userId} rank={i + 1} row={r} highlight={r.userId === currentUserId} />
       ))}
