@@ -19,7 +19,7 @@ const Cell = ({ children, className = "" }: { children: React.ReactNode; classNa
 
 const Row = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
   <section
-    className={`container px-3 sm:px-6 py-3 sm:py-6 md:py-10 [&:not(:has(*>*))]:hidden ${className}`}
+    className={`container px-3 sm:px-6 py-3 sm:py-6 md:py-10 lg:py-12 [&:not(:has(*>*))]:hidden ${className}`}
   >
     {children}
   </section>
@@ -32,15 +32,15 @@ const Index = () => {
 
       <main className="flex-1">
         {/* Bienvenue */}
-        <section className="container px-3 sm:px-6 pt-5 sm:pt-8 md:pt-12 pb-2">
-          <div className="text-center max-w-2xl mx-auto animate-fade-in-up">
+        <section className="container px-3 sm:px-6 pt-5 sm:pt-8 md:pt-12 lg:pt-16 pb-2">
+          <div className="text-center max-w-2xl lg:max-w-3xl mx-auto animate-fade-in-up">
             <p className="text-[11px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.3em] text-accent font-medium">
               Bienvenue
             </p>
-            <h1 className="mt-2 sm:mt-3 font-serif text-3xl xs:text-4xl md:text-5xl lg:text-6xl font-semibold leading-[1.1]">
+            <h1 className="mt-2 sm:mt-3 font-serif text-3xl xs:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-semibold leading-[1.1]">
               L'École du Dimanche
             </h1>
-            <p className="mt-3 sm:mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
+            <p className="mt-3 sm:mt-4 lg:mt-5 text-sm sm:text-base lg:text-lg text-muted-foreground leading-relaxed">
               Un espace pour grandir dans la foi, jouer aux quizz bibliques
               et découvrir chaque jour la Parole de Dieu.
             </p>
@@ -52,8 +52,8 @@ const Index = () => {
 
         {/* Hero / Évangile + défi + quizz vedette */}
         <Row className="pt-4 sm:pt-6 md:pt-8">
-          <div className="grid gap-4 sm:gap-6 lg:grid-cols-3 [&:not(:has(>*>*))]:hidden">
-            <Cell className="lg:col-span-2 space-y-4 sm:space-y-6">
+          <div className="grid gap-4 sm:gap-6 lg:gap-8 xl:gap-10 lg:grid-cols-3 [&:not(:has(>*>*))]:hidden">
+            <Cell className="lg:col-span-2 space-y-4 sm:space-y-6 lg:space-y-8">
               <GospelOfTheDay />
               <QuoteOfTheDay />
               <DailyChallenge />
@@ -66,7 +66,7 @@ const Index = () => {
 
         {/* Top juniors + Horaires */}
         <Row>
-          <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
+          <div className="grid gap-4 sm:gap-6 lg:gap-8 xl:gap-10 md:grid-cols-2">
             <Cell>
               <TopJuniors />
             </Cell>
@@ -77,8 +77,8 @@ const Index = () => {
         </Row>
 
         {/* Annonces + Historique */}
-        <Row className="pb-12 sm:pb-16">
-          <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
+        <Row className="pb-12 sm:pb-16 lg:pb-20">
+          <div className="grid gap-4 sm:gap-6 lg:gap-8 xl:gap-10 md:grid-cols-2">
             <Cell>
               <Announcements />
             </Cell>
